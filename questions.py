@@ -23,11 +23,33 @@ names a target of "4 of 5", and four of three is not a thing.
 
 QUESTIONS = [
     # {"question": "...", "expects": "..."},
-    {"question": "", "expects": ""},
-    {"question": "", "expects": ""},
-    {"question": "", "expects": ""},
-    {"question": "", "expects": ""},
-    {"question": "", "expects": ""},
+    # Source doc is noted after each one so you can check an answer without
+    # grepping the corpus again.
+    {
+        # admin_printing_quota.txt
+        "question": "How much printing does each student get per semester, and does it roll over?",
+        "expects": "$30",
+    },
+    {
+        # admin_pass_fail_option.txt
+        "question": "How late in the term can I declare a course pass/fail?",
+        "expects": "week eight",
+    },
+    {
+        # dining_the_atrium.txt — the fact is one clause in a longer post
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+        "expects": "1:15",
+    },
+    {
+        # course_cs_210_workload.txt (also stated in course_cs_210.txt)
+        "question": "How many hours a week outside class should I expect for CS 210?",
+        "expects": "8 to 10 hours",
+    },
+    {
+        # admin_housing_lottery.txt — buried mid-paragraph, not the topic sentence
+        "question": "How is housing lottery order decided for juniors and seniors?",
+        "expects": "credit hours",
+    },
 ]
 
 # Questions from a different world entirely. Your gate should refuse all five.
