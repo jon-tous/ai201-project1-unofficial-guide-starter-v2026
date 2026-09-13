@@ -22,11 +22,16 @@
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This is a small retrieval-augmented Q&A system built on `campus_life`, a
+corpus of 88 short, single-topic posts about student life — dining hall wait
+times, course workloads, housing lottery rules, laundry costs, administrative
+deadlines, and similar. Ask it something specific and checkable, like "How
+many hours a week should I expect for CS 210?" or "By what time are the
+sandwiches at The Atrium picked clean?", and it retrieves the post that
+actually answers it, checks that the retrieval is close enough to be trusted,
+and answers using only that text, naming the file it came from. Ask it
+something the corpus doesn't cover — a recipe, sports trivia, another
+school's rules — and it refuses instead of guessing.
 
 ## Chunking Strategy
 
@@ -165,18 +170,27 @@ from these numbers, and 0.5 is more centered.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
+**1.** For Milestone 3, I asked Claude what would happen if I chunked
+`campus_life` by naively splitting on paragraph breaks instead of the
+starter's fixed 800-character window. It found that `course_econ_101.txt`'s
+workload paragraph would come out as its own 42-character chunk — "Expect 4
+hours a week outside class." — with no course name anywhere in it, useless on
+its own. That's what convinced me the splitter needed a hard floor, not just
+a paragraph-aware split, so I had it add the merge-back rule: any trailing
+paragraph group under 80 characters gets folded into the chunk before it
+instead of standing alone. That floor is now `MIN_CHUNK_CHARS` in
+`chunker.py`, and it's the same 80 I used for acceptance criterion 4.
 
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
-**1.**
-
-**2.**
+**2.** For Milestone 4, I asked Claude to run my 5 test questions and the 5
+`OUT_OF_SCOPE` questions through `python app.py retrieve` and read off the
+gap between the two groups rather than reusing the starter's 0.6 default. It
+came back with 0.214–0.295 for the real questions, 0.825–0.934 for the
+out-of-scope ones, and proposed 0.5 as the midpoint. Before accepting that
+number I had it show me the CS 210 question specifically — criterion 5 in
+`criteria.md` already flagged it as the one riskiest for source attribution,
+since `course_cs_210.txt` and `course_cs_210_workload.txt` state the same fact
+— and its best distance (0.278) was comfortably clear of 0.5 too, so I kept
+the number instead of second-guessing it further.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
