@@ -24,10 +24,16 @@ CORPUS = os.getenv("AI201_CORPUS", "campus_life")
 
 
 # ─── Chunking (Milestone 3) ──────────────────────────────────────────────────
-# These are deliberately plain, generic numbers. Milestone 3 is where you
-# replace them with numbers that fit the documents you actually read.
+# campus_life's longest document is 554 characters. 600 is a ceiling just
+# above that — every real post fits in one paragraph-group and stays one
+# chunk, but a document that ran longer would still get split, at a
+# paragraph break, instead of silently growing one giant chunk. See
+# chunker.py::split_documents.
+CHUNK_SIZE = 600        # characters per chunk
 
-CHUNK_SIZE = 800        # characters per chunk
+# Only used by chunker.py::fallback_split now. The paragraph-aware splitter
+# never cuts mid-sentence, so it has nothing for character overlap to patch
+# over.
 CHUNK_OVERLAP = 120     # characters shared between neighbouring chunks
 
 

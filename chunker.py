@@ -22,10 +22,13 @@ to it, write down what you saw, and move on. That's a real observation about
 your pipeline, not giving up.
 """
 
+import re
 from dataclasses import dataclass
 
 import config
 from ingest import Document
+
+MIN_CHUNK_CHARS = 80  # a chunk shorter than this is a fragment, not an answer — see criteria.md #4
 
 
 @dataclass
@@ -80,24 +83,67 @@ def fallback_split(
     return chunks
 
 
+def _paragraphs(text: str) -> list[str]:
+    """Split a document on blank lines."""
+    return [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    Group each document's paragraphs into chunks up to CHUNK_SIZE, breaking
+    only at a paragraph boundary — never mid-sentence.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
+    campus_life is 88 short posts, each one topic: 183 to 554 characters,
+    every one of them under CHUNK_SIZE. Reading all 88 in Milestone 1 showed
+    their paragraphs are sub-points of that one topic (a course post's intro,
+    workload line, and advice line; a dining post's wait times, hours, and
+    cost), not separate topics — there's nothing here worth pulling apart. So
+    for this corpus, every document stays one chunk, but as a consequence of
+    walking its paragraphs and finding they all fit, not because a fixed
+    800-character cutoff happened not to bite. A document that ran long would
+    still split cleanly at a paragraph break here instead of slicing a
+    sentence in half.
 
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    If a split would leave a trailing group under MIN_CHUNK_CHARS characters
+    — a bare fragment like course_econ_101.txt's "Expect 4 hours a week
+    outside class." on its own, with no course name in it — that group is
+    merged into the one before it instead of standing alone.
     """
-    return fallback_split(documents)
+    chunk_size = config.CHUNK_SIZE
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        paragraphs = _paragraphs(doc.text)
+        groups: list[list[str]] = []
+        current: list[str] = []
+        current_len = 0
+
+        for para in paragraphs:
+            added_len = len(para) + (2 if current else 0)  # + the "\n\n" joiner
+            if current and current_len + added_len > chunk_size:
+                groups.append(current)
+                current = [para]
+                current_len = len(para)
+            else:
+                current.append(para)
+                current_len += added_len
+        if current:
+            groups.append(current)
+
+        if len(groups) > 1 and sum(len(p) for p in groups[-1]) < MIN_CHUNK_CHARS:
+            groups[-2].extend(groups.pop())
+
+        for index, group in enumerate(groups):
+            chunks.append(
+                Chunk(
+                    text="\n\n".join(group),
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
