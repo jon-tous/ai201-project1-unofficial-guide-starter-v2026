@@ -128,27 +128,40 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** How much printing does each student get per semester, and does it roll over?
 
 **Answer:**
 
 ```
+Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over.
+
+Source: admin_printing_quota.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.5
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+I ran my 5 test questions and the 5 in `OUT_OF_SCOPE` through `python app.py
+retrieve` and recorded each one's best (lowest) distance. The in-corpus
+questions came back 0.214–0.295; the out-of-scope ones came back 0.825–0.934
+— a gap of over half a point with nothing in it. 0.5 sits in the middle of
+that gap: comfortably above every real question's best distance and
+comfortably below every off-topic one's, so a small shift in either group on
+a different run isn't likely to cross it. I left the old 0.6 default behind
+on purpose — it happens to also fall in the gap here, but it wasn't chosen
+from these numbers, and 0.5 is more centered.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| How much printing does each student get per semester, and does it roll over? | Yes | 0.260 |
+| How late in the term can I declare a course pass/fail? | Yes | 0.215 |
+| By what time are the sandwiches at The Atrium usually picked clean? | Yes | 0.295 |
+| How many hours a week outside class should I expect for CS 210? | Yes | 0.278 |
+| How is housing lottery order decided for juniors and seniors? | Yes | 0.214 |
+| What is the capital of Mongolia? | No | 0.825 |
+| How do I change the oil in a diesel engine? | No | 0.934 |
+| Who won the 1994 World Cup? | No | 0.886 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.844 |
+| How do I write a for loop in Rust? | No | 0.896 |
 
 ## How I Used AI
 
