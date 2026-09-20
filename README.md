@@ -266,23 +266,67 @@ $ python -c "from ingest import load_documents; from chunker import split_docume
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+I missed nothing — all five criteria came in MET on every run (see
+Verdicts, above). There's no failure to trace through the five stages
+here, so the honest thing to do is check whether that's because the
+pipeline is solid or because the targets never put it at real risk.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+Looking criterion by criterion, three of my five never had a real chance
+to fail, for three different reasons — that's one pattern, not three
+separate problems:
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
+- **Criterion 2** (every answer names a source) was never really at risk.
+  `criteria.md`'s own "why this target" already said this out loud:
+  `generate.py` labels every chunk `[from filename]` in the prompt and its
+  system instruction tells the model outright to name the file. Passing
+  this is instruction-following, not a retrieval result.
+- **Criterion 4** (no chunk under 80 characters) is guaranteed by
+  construction. `MIN_CHUNK_CHARS = 80` and the merge-back rule are inside
+  `chunker.py::split_documents` itself — a trailing fragment gets folded
+  into the previous chunk before it can ever become a standalone chunk. On
+  this corpus the criterion can't fail; it's testing whether I wrote the
+  code I said I'd write, not whether the pipeline behaves well on new input.
+- **Criterion 3** (gate refuses out-of-corpus questions) is circular as
+  measured. I picked `THRESHOLD = 0.5` in Milestone 4 by looking directly
+  at these same five `OUT_OF_SCOPE` questions' distances (0.825–0.934) and
+  choosing a cutoff that clears them with room. Evaluating criterion 3
+  against the same five questions used to set the cutoff doesn't test
+  whether the gate generalizes — it tests whether I can draw a line
+  between two clusters I already had in front of me.
 
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
+To find out whether criterion 3 would survive a harder test, I ran four
+new out-of-scope questions that were never part of tuning — not trivia,
+but campus-life-*shaped* topics this corpus doesn't actually cover:
 
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
+| Question | Best distance | Gate |
+|---|---|---|
+| How do I request a safety escort to walk home at night? | 0.672 | refused |
+| How do I sign up for a campus gym membership? | 0.617 | refused |
+| How do I book a tutoring appointment for calculus? | 0.598 | refused |
+| How do I report a lost student ID card? | 0.714 | refused |
 
-     Milestone 3. -->
+All four still refused — the gate holds. But the margin above the 0.5
+cutoff shrank from 0.325–0.434 (the trivia set) to 0.098–0.214 (this set).
+The tutoring question in particular cleared the cutoff by less than a
+tenth of a point, retrieving `money_textbooks.txt` on vocabulary overlap
+("book," presumably) rather than any real topical match. Nothing broke,
+but the pipeline has far less room here than a "5 of 5, comfortably
+refused" result suggests.
+
+**Which I'd tighten, and to what:** criterion 3. I'd swap the trivia
+questions in `OUT_OF_SCOPE` for topically-adjacent ones like the four
+above — plausible campus questions this corpus genuinely doesn't cover,
+not questions from a different universe entirely — and I'd add a margin
+requirement: not just "refused," but "refused with best distance at least
+0.1 clear of the cutoff." A gate that barely clears isn't meaningfully
+different from one that's about to fail on the next slightly-closer
+question, and "4 of 5 refused" alone can't tell those apart.
+
+Only criteria 1 and 5 tested something with real uncertainty going in —
+whether retrieval would surface a fact buried mid-paragraph (the housing
+lottery question) or correctly pick between two near-duplicate files
+(CS 210) — and both held up on their merits rather than by construction or
+circular tuning. Those are the two results I actually trust.
 
 ## The Improvement
 
