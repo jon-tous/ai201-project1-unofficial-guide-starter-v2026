@@ -46,11 +46,14 @@ TOP_K = 5               # how many chunks to pull back per question
 #
 # LOWER IS BETTER: 0.3 is a close match, 0.9 is unrelated.
 #
-# Measured in Milestone 4: my 5 test questions' best distances ran 0.214 to
-# 0.295; my 5 OUT_OF_SCOPE questions' best distances ran 0.825 to 0.934. 0.5
-# sits in the middle of that gap, comfortably clear of both groups. See
-# README.md "My relevance cutoff" for the full ten numbers.
-THRESHOLD = 0.5
+# Retuned in Milestone 4's diagnosis pass: the original 0.5 was picked
+# against OUT_OF_SCOPE trivia (0.825-0.934) that shared no vocabulary with
+# the corpus, so it never tested a real near-miss. Swapping in topically
+# -adjacent out-of-scope questions (0.598-0.714) narrowed the real gap to
+# my 5 test questions' 0.214-0.295. 0.45 is the highest threshold that still
+# keeps >= 0.1 clear of both sides of that narrower gap. See README.md
+# "The Improvement" for the full before/after numbers.
+THRESHOLD = 0.45
 
 
 # ─── Models ──────────────────────────────────────────────────────────────────

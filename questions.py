@@ -54,17 +54,37 @@ QUESTIONS = [
 
 # Questions from a different world entirely. Your gate should refuse all five.
 #
-# There are five of these because criterion 3 in criteria.md names a target of
-# "at least 4 of 5" — you need five things to try before you can report 4 of 5.
+# There are five of these because criterion 3 in criteria.md names a target
+# of "at least 4 of 5" — you need five things to try before reporting 4 of 5.
 # `run_eval.py` runs these through retrieval and the gate on every eval and
 # records what happened, so criterion 3 has evidence in the run log alongside
 # the others. They cost no model calls: a refusal never reaches the model.
+#
+# Original (Milestone 1-2) set — pure trivia, no shared vocabulary with the
+# corpus at all. Replaced in Milestone 4 because the "before" run showed these
+# refused with huge margin (best distances 0.825-0.934 against a 0.5 cutoff),
+# and that same margin was used to *pick* the 0.5 cutoff in Milestone 4 — so
+# testing criterion 3 against these five never told me anything the tuning
+# process hadn't already guaranteed. See README.md "Diagnoses" and
+# "The Improvement".
+#
+#   "What is the capital of Mongolia?",
+#   "How do I change the oil in a diesel engine?",
+#   "Who won the 1994 World Cup?",
+#   "What is the recommended dosage of ibuprofen for a headache?",
+#   "How do I write a for loop in Rust?",
+#
+# Current set — topically-adjacent instead of pure trivia: plausible
+# campus-life questions this corpus genuinely doesn't cover, several sharing
+# a word with a real document (appeal/appeals, book/textbooks) the way an
+# actual off-topic question might. This is the harder, non-circular test the
+# diagnosis called for.
 OUT_OF_SCOPE = [
-    "What is the capital of Mongolia?",
-    "How do I change the oil in a diesel engine?",
-    "Who won the 1994 World Cup?",
-    "What is the recommended dosage of ibuprofen for a headache?",
-    "How do I write a for loop in Rust?",
+    "How do I request a safety escort to walk home at night?",
+    "How do I sign up for a campus gym membership?",
+    "How do I book a tutoring appointment for calculus?",
+    "How do I report a lost student ID card?",
+    "How do I appeal a parking ticket I think was issued unfairly?",
 ]
 
 

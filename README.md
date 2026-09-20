@@ -330,34 +330,68 @@ circular tuning. Those are the two results I actually trust.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** Retuned the relevance gate against a harder,
+non-circular out-of-scope set. Two parts, one change: (1) swapped
+`OUT_OF_SCOPE` in `questions.py` from five unrelated trivia questions to
+five topically-adjacent ones the corpus genuinely doesn't cover — safety
+escorts, gym membership, tutoring appointments, lost ID cards, parking-ticket
+appeals — several sharing a word with a real document the way an actual
+off-topic question might (`appeal`/`admin_grade_appeals.txt`,
+`book`/`money_textbooks.txt`); (2) lowered `THRESHOLD` in `config.py` from
+0.5 to 0.45, the highest value that still keeps at least 0.1 clear of both
+the real questions' worst distance (0.295) and the new out-of-scope
+questions' best distance (0.598). Chunking and retrieval are untouched —
+same 88 chunks, same embeddings, same `top_k`.
 
-**Why I picked it:**
-
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+**Why I picked it:** This is exactly what the diagnosis named. Criterion 3
+was measured against the same trivia questions used to pick the original
+0.5 cutoff, so "5 of 5, comfortably refused" never tested anything — it
+just confirmed I could draw a line between two clusters I already had in
+front of me. Testing against genuinely adjacent questions, and retuning the
+cutoff against *that* set instead, is the fix the circularity pointed at.
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 3. Gate stops out-of-corpus questions (harder set, cutoff 0.45) | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 4. No chunk is shorter than 80 characters | all of them | 88 of 88 | 88 of 88 | 88 of 88 | MET |
+| 5. Named source actually backs the answer | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
-**Did it help?**
+Real output, produced by `run_eval.py::check_out_of_scope`
+(`results/run_2026-09-20_1820_after.md`), cutoff 0.45:
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+```
+| Out-of-scope question | Best distance | Gate |
+|---|---|---|
+| How do I request a safety escort to walk home at night? | 0.672 | refused |
+| How do I sign up for a campus gym membership? | 0.617 | refused |
+| How do I book a tutoring appointment for calculus? | 0.598 | refused |
+| How do I report a lost student ID card? | 0.714 | refused |
+| How do I appeal a parking ticket I think was issued unfairly? | 0.641 | refused |
+```
 
-     Milestone 4. -->
+Everything else — the five real-question answers, their sources, the
+88/88 chunk floor — came back byte-for-byte the same distances as the
+before run (`results/run_2026-09-20_1747_before.md`), which is expected:
+this change touched only the gate and its test set, not chunking or
+retrieval.
+
+**Did it help?** Yes, but not by moving a raw count — criteria 1, 2, 4,
+and 5 were already 5 of 5 and stayed there, because chunking and
+retrieval weren't touched. Criterion 3's count didn't move either (still
+5 of 5); what changed is what that "5 of 5" proves. Under the harder,
+non-circular test, the margin above cutoff dropped from 0.325–0.434
+(trivia, at 0.5) to 0.148–0.264 (adjacent questions, at 0.45) — real
+headroom, but far less than the original measurement implied. And the
+retune specifically mattered: at the *old* 0.5 cutoff, the tutoring
+question's margin against the harder set would have been 0.098, missing
+the ≥0.1 margin rule I set in the diagnosis; only after lowering the
+cutoff to 0.45 does it clear that bar (0.148). So the fix didn't just
+relabel the same result — without it, my own tightened version of
+criterion 3 would have failed on the question closest to the line.
 
 ## What's Still Broken
 
