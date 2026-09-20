@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Jon Toussaint — corpus: `campus_life`
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -191,6 +191,22 @@ number I had it show me the CS 210 question specifically — criterion 5 in
 since `course_cs_210.txt` and `course_cs_210_workload.txt` state the same fact
 — and its best distance (0.278) was comfortably clear of 0.5 too, so I kept
 the number instead of second-guessing it further.
+
+**3.** For Milestone 3, all five criteria came back MET on the first real
+run, so I asked Claude whether that meant the pipeline was solid or the
+targets were too easy — and to look for one pattern across the five
+rather than explain each MET individually. It came back with a pattern I
+hadn't seen coming in from the run log alone: three of the five criteria
+(2, 3, 4) couldn't really have failed, for three different structural
+reasons (prompt instruction-following, code construction, and circular
+threshold tuning), not because retrieval was actually reliable on those
+three. To pressure-test criterion 3 specifically, it proposed harder,
+topically-adjacent out-of-scope questions and came back with four of
+them; I had it add a fifth, since criteria.md's own "4 of 5" target needs
+five things to be a fraction of, and picked the parking-ticket-appeal
+question over its other suggestions because it shared the same
+near-duplicate-vocabulary risk ("appeal") I'd already used for CS 210
+under criterion 5, instead of taking whichever one came back first.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
@@ -395,17 +411,67 @@ criterion 3 would have failed on the question closest to the line.
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+No criterion is currently missed — all five are MET, before and after the
+fix. But a clean Verdicts column hides three things I know are still
+fragile, and I'm calling them out on purpose rather than letting "MET"
+stand in for "solid":
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+- **Criterion 3's margin is real but thin, and I only stress-tested it
+  against five questions I picked myself.** After the retune, the closest
+  call (tutoring, 0.598) clears the 0.45 cutoff by 0.148 — comfortably
+  over my own 0.1 margin rule, but nowhere near the 0.325+ margin the old
+  trivia set implied. I didn't do a systematic or adversarial search for
+  the single hardest near-miss question this corpus admits; I found one
+  failure mode (shared vocabulary — "book," "appeal") and patched against
+  that specific shape. A genuinely adversarial fifth or sixth question I
+  haven't thought of could still land under 0.45. **Why I stopped here:**
+  Milestone 4 asks for one change, measured properly, not an open-ended
+  search for the worst case — I judged that finding and fixing one real
+  failure mode, with numbers, was worth more than guessing at others I
+  hadn't observed.
+- **The paragraph-splitting branch in `chunker.py::split_documents` has
+  never actually run.** `campus_life` produced 88 chunks from 88 documents
+  both before and after Milestone 3 — every document's paragraphs fit
+  under `CHUNK_SIZE` in one group, so the code path that splits a
+  document at a paragraph break (instead of leaving it whole) has zero
+  coverage from real data. I'm confident it's correct because I traced it
+  by hand, but "I traced it by hand" is a weaker claim than "I watched it
+  fire." **Why I stopped here:** fixing this means fabricating a synthetic
+  long document, which risks testing my synthetic example instead of my
+  actual corpus — I judged that out of scope for this submission rather
+  than worth faking.
+- **Criteria 1, 2, and 5 are still graded by me reading the output, not by
+  a scorer.** `run_eval.py` prints `—` in the Run columns because
+  `scorer.py` doesn't exist; my Verdicts and Run Log entries for those
+  three criteria are my own reading of 15 real answers each, not an
+  automated, rerunnable check. I also noticed the model's phrasing isn't
+  stable — "Source: file.txt", "(file.txt)", and "Sources: file.txt and
+  other.txt" all showed up for the same question across different runs —
+  so any `scorer.py` I build later has to tolerate that variance or it
+  will mark correct answers wrong. **Why I stopped here:** `run_eval.py`'s
+  own docstring says building `scorer.py` and deciding what counts as
+  correct is deliberately left as a later, separate exercise, not part of
+  this submission — building it now would mean grading my own work with a
+  tool I built to agree with myself.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+Mainly criterion 3. I'd write it from the start the way I rewrote it in
+Milestone 4 — a topically-adjacent out-of-scope set plus an explicit
+margin requirement ("refused, and by at least X") — instead of "4 of 5
+refused" against whatever out-of-scope questions I happened to write in
+Milestone 2. The tell was available earlier than I used it: the moment I
+wrote five out-of-scope questions that shared *no* vocabulary at all with
+dining halls, courses, or housing (criteria.md's own "why this target"
+already says as much), I could have asked whether that made the test too
+easy, not just whether the gate would pass it. I didn't need Milestone 4's
+measurements to notice that; I needed to ask the question in Milestone 2.
 
-     Milestone 5. -->
+Criteria 2 and 4 I'd leave mostly alone but with lower expectations of
+what they're proving. Both turned out to be guaranteed by things I'd
+already built before I ever ran the eval — the prompt's citation
+instruction, and `MIN_CHUNK_CHARS`'s merge-back rule — so "MET" for
+either one is closer to confirming I wrote the code I said I'd write than
+to learning something about the system's behavior. I'd keep them (a
+regression could still break either), but I wouldn't count on them to
+catch anything new.
