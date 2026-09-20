@@ -207,46 +207,62 @@ the number instead of second-guessing it further.
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 4. No chunk is shorter than 80 characters | all of them | 88 of 88 | 88 of 88 | 88 of 88 | MET |
+| 5. Named source actually backs the answer | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+`scorer.py` doesn't exist, so runs 1–3 for criteria 1, 2, and 5 are my own
+reading of the real output below (from `results/run_2026-09-20_1747_before.md`,
+produced by `run_eval.py::main`), question by question, run by run — not a
+description of it. Criteria 3 and 4 are each one deterministic pass
+(`run_eval.py::check_out_of_scope` for the gate; `chunker.py::split_documents`
+for chunk length), so the same number holds across all three run columns on
+purpose.
+
+Real output, run 1, for the question I expected to be the shaky one:
+
+```
+### How is housing lottery order decided for juniors and seniors? — run 1
+
+- Best distance: 0.2143 (passed the gate)
+- Sources retrieved: admin_housing_lottery.txt, admin_parking_permits.txt, advising_registration.txt, dining_the_atrium_followup.txt, housing_tamsin_court.txt
+
+Juniors and seniors are ordered by accumulated credit hours first, and only tie-break randomly (admin_housing_lottery.txt).
+```
+
+Real output for criterion 3 and 4, one pass each:
+
+```
+## The relevance gate on out-of-corpus questions
+Produced by `run_eval.py::check_out_of_scope`, cutoff 0.5. Refused 5 of 5.
+
+| Out-of-scope question | Best distance | Gate |
+|---|---|---|
+| What is the capital of Mongolia? | 0.825 | refused |
+| How do I change the oil in a diesel engine? | 0.934 | refused |
+| Who won the 1994 World Cup? | 0.886 | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.844 | refused |
+| How do I write a for loop in Rust? | 0.896 | refused |
+```
+
+```
+$ python -c "from ingest import load_documents; from chunker import split_documents as s; c = s(load_documents()); print(len(c), 'chunks,', min(len(x.text) for x in c), 'shortest')"
+88 chunks, 178 shortest
+```
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     week — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
-
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer (target: 4 of 5) | MET | Judged by hand since `scorer.py` doesn't exist. For all 5 questions, every one of the 3 runs produced an answer containing the exact `expects` phrase (`$30`, `week eight`, `1:15`, `8 to 10 hours`, `credit hours`), and generation is grounded to only the retrieved chunks — so the answer chunk was in the retrieved set 15/15 times, including the housing-lottery question I'd flagged as the one likely to miss. 5 of 5, not just 4. |
+| 2 | Every answer names a source (target: 5 of 5) | MET | Read all 15 runs (5 questions × 3 runs) in `results/run_2026-09-20_1747_before.md`. Every single one names at least one source filename, whether as `Source: file.txt` or inline in parentheses. 15/15. |
+| 3 | Gate stops out-of-corpus questions (target: 4 of 5) | MET | `run_eval.py::check_out_of_scope` refused all 5 `OUT_OF_SCOPE` questions, with best distances 0.825–0.934 against the 0.5 cutoff — comfortably refused, not a borderline call. 5 of 5. |
+| 4 | No chunk is shorter than 80 characters (target: all of them) | MET | Ran `split_documents` fresh: 88 documents in, 88 chunks out, shortest chunk 178 characters, zero chunks under 80. Not close. |
+| 5 | Named source actually backs the answer (target: 4 of 5) | MET | For each of the 5 questions I grepped the exact source file named in the answer for the `expects` phrase from `questions.py`. All 5 files contain their phrase verbatim, including `course_cs_210_workload.txt` for the CS 210 question — the one I built specifically to risk a mix-up with its near-duplicate `course_cs_210.txt`, and it named the right one all 3 runs. 5 of 5. |
 
 ## Diagnoses
 
