@@ -1,5 +1,46 @@
 # Running this project
 
+> ## Week 9 capstone — run path (Path B: local with logs)
+>
+> **Environment:** Python **3.13** (3.11–3.12 also fine; **not** 3.14 — the
+> pinned packages don't support it). Dependencies are pinned in
+> `requirements.txt`. No local model files beyond Chroma's bundled
+> all-MiniLM-L6-v2 embedder (~80 MB, downloaded on first index build). Needs a
+> `GEMINI_API_KEY` (free tier is enough).
+>
+> **One-time setup, from a fresh clone:**
+>
+> ```bash
+> python3.13 -m venv .venv
+> .venv/bin/pip install -r requirements.txt
+> cp .env.example .env            # paste your GEMINI_API_KEY into .env
+> ```
+>
+> **The command that starts it:**
+>
+> ```bash
+> ./run.sh
+> ```
+>
+> It builds the index if there isn't one, then serves on port 5001 with
+> gunicorn. Check it from another terminal:
+>
+> ```bash
+> curl http://127.0.0.1:5001/health
+> curl -X POST http://127.0.0.1:5001/ask -H 'Content-Type: application/json' \
+>   -d '{"question": "is the housing lottery random?"}'
+> ```
+>
+> **The record:** every `/ask` request appends one JSON line to
+> `logs/requests.jsonl`. Read it with `.venv/bin/python requestlog.py`
+> (last 15) or `.venv/bin/python requestlog.py --summary`.
+>
+> **Testing the bad path:** start with `AI201_ALLOW_FAULTS=1 ./run.sh` and send
+> an `X-Fault` header — `timeout`, `server_error`, `rate_limit`, `empty`,
+> `bad_key`, or e.g. `server_error:1` (fail only the first attempt). Without
+> `AI201_ALLOW_FAULTS=1` the header is ignored. Use `AI201_CACHE=0` when
+> measuring, so every request is a real model call.
+
 Everything about how the starter works and how to use it.
 
 ---
