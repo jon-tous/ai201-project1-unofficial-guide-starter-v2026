@@ -514,3 +514,91 @@ those faults on purpose so they can be tested.
   from surviving failures of the things it depends on.
 - **I'm not adding a fallback model or a response queue.** When Gemini is down
   after retries, `/ask` says so cleanly; it doesn't try to answer some other way.
+
+## Running It
+
+**Path B — local with logs.** The service runs on my machine under gunicorn,
+started by one command — `./run.sh` — which builds the search index if the
+checkout doesn't have one and serves `POST /ask` and `GET /health` on port 5001.
+The environment (Python 3.13, pinned `requirements.txt`, the ~80 MB bundled
+embedder, a `GEMINI_API_KEY`) and the one-time setup are in
+[RUNNING.md](RUNNING.md). I tested those instructions from a fresh `git clone`
+into an empty folder with a new Python 3.13 venv: it built the index (13.3s),
+served, answered, and logged on the first try.
+
+Two things I hit getting here, both now handled in `run.sh` / RUNNING.md:
+my old venv was Python 3.14, which `test.py` rejects (9/10 checks — rebuilt on
+3.13, now 10/10); and port 5000 is taken on macOS by the AirPlay Receiver, so
+the default port is 5001. Gunicorn's default 30s worker timeout would also
+kill a request in the middle of its retries (the request deadline is 30s), so
+`run.sh` sets `--timeout 60`.
+
+## Instrumentation
+
+Every `/ask` request — answered, refused, rejected, or failed — appends one JSON
+line to `logs/requests.jsonl` (`requestlog.py::write`, called from
+`serve.py::ask`). Unhandled errors and unknown routes are logged too, by
+`serve.py::_unhandled`. Fields:
+
+| Field | What it holds |
+|---|---|
+| `ts` | UTC timestamp, ms precision |
+| `request_id` | 12-hex id, also returned in the JSON body and `X-Request-ID` header |
+| `question` | what came in (clipped at 300 chars; non-string input logged as-is) |
+| `fault` | injected fault, if any (`null` in normal use) |
+| `answer`, `refused`, `best_distance`, `sources` | what went out, on a 200 |
+| `status`, `outcome` | HTTP status and one of `answered`, `refused`, `bad_input`, `no_index`, `model_timeout`, `model_unavailable`, `model_empty`, `model_error`, `internal_error` |
+| `latency_ms` | whole request, end to end inside the server |
+| `retrieval_ms`, `model_ms` | time to the gate decision, and time from prompt to answer |
+| `attempts`, `retries` | model calls made, and the failure kind behind each retry |
+| `cache_hit` | answered from the local response cache (no API cost) |
+| `prompt_tokens`, `output_tokens` | as reported by Gemini's `usage_metadata`, summed over attempts |
+| `error` | the full internal error text — kept here, never sent to the caller |
+
+`.venv/bin/python requestlog.py` prints the last 15 as a table;
+`--summary` gives counts by outcome, latency, and mean tokens.
+
+Extract from a real session (`AI201_CACHE=0 AI201_ALLOW_FAULTS=1 ./run.sh`,
+driven by `tools/send.py`) — answered, refused, bad input, a request that
+recovered from an injected 503, and an injected empty response:
+
+```
+{"ts": "2026-11-10T01:48:29.692+00:00", "request_id": "3bf54758026a", "question": "How much printing does each student get per semester, and does it roll over?", "fault": null, "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt", "refused": false, "best_distance": 0.2598, "sources": ["admin_printing_quota.txt", "course_cs_210.txt", "course_cs_340.txt", "money_jobs.txt", "money_textbooks.txt"], "status": 200, "outcome": "answered", "latency_ms": 1236, "retrieval_ms": 70, "model_ms": 1166, "attempts": 1, "retries": null, "cache_hit": false, "prompt_tokens": 620, "output_tokens": 41, "error": null}
+{"ts": "2026-11-10T01:48:30.474+00:00", "request_id": "111e991ce805", "question": "How late in the term can I declare a course pass/fail?", "fault": null, "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. (Source: admin_pass_fail_option.txt)", "refused": false, "best_distance": 0.2154, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "status": 200, "outcome": "answered", "latency_ms": 779, "retrieval_ms": 72, "model_ms": 707, "attempts": 1, "retries": null, "cache_hit": false, "prompt_tokens": 547, "output_tokens": 35, "error": null}
+{"ts": "2026-11-10T01:48:31.250+00:00", "request_id": "866e6d7e6c72", "question": "By what time are the sandwiches at The Atrium usually picked clean?", "fault": null, "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)", "refused": false, "best_distance": 0.2952, "sources": ["dining_halden_hall_followup.txt", "dining_kestrel_commons_followup.txt", "dining_north_kitchen_followup.txt", "dining_the_atrium.txt", "dining_the_atrium_followup.txt"], "status": 200, "outcome": "answered", "latency_ms": 775, "retrieval_ms": 65, "model_ms": 710, "attempts": 1, "retries": null, "cache_hit": false, "prompt_tokens": 664, "output_tokens": 41, "error": null}
+{"ts": "2026-11-10T01:48:37.138+00:00", "request_id": "afa5a34eae6f", "question": "How do I request a safety escort to walk home at night?", "fault": null, "answer": "I don't have enough information about that.", "refused": true, "best_distance": 0.6715, "sources": [], "status": 200, "outcome": "refused", "latency_ms": 63, "retrieval_ms": 63, "model_ms": null, "attempts": 0, "retries": null, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null}
+{"ts": "2026-11-10T01:48:37.203+00:00", "request_id": "b6e492d077c1", "question": "How do I sign up for a campus gym membership?", "fault": null, "answer": "I don't have enough information about that.", "refused": true, "best_distance": 0.6169, "sources": [], "status": 200, "outcome": "refused", "latency_ms": 63, "retrieval_ms": 63, "model_ms": null, "attempts": 0, "retries": null, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null}
+{"ts": "2026-11-10T01:48:37.474+00:00", "request_id": "3dc53be9870b", "question": 123, "fault": null, "status": 400, "outcome": "bad_input", "latency_ms": 0, "retrieval_ms": null, "model_ms": null, "attempts": 0, "retries": null, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "\"question\" must be a string, not int."}
+{"ts": "2026-11-10T01:48:37.550+00:00", "request_id": "0ddd2cd1cd0b", "question": "", "fault": null, "status": 400, "outcome": "bad_input", "latency_ms": 0, "retrieval_ms": null, "model_ms": null, "attempts": 0, "retries": null, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "\"question\" is empty. Ask something, like \"is the housing lottery random?\""}
+{"ts": "2026-11-10T01:48:37.625+00:00", "request_id": "ad9bcba6d275", "question": null, "fault": null, "status": 400, "outcome": "bad_input", "latency_ms": 0, "retrieval_ms": null, "model_ms": null, "attempts": 0, "retries": null, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "Send a JSON object, like {\"question\": \"is the housing lottery random?\"}"}
+{"ts": "2026-11-10T01:48:39.550+00:00", "request_id": "29cdc10e3964", "question": "How much printing does each student get per semester, and does it roll over?", "fault": "server_error:1", "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt", "refused": false, "best_distance": 0.2598, "sources": ["admin_printing_quota.txt", "course_cs_210.txt", "course_cs_340.txt", "money_jobs.txt", "money_textbooks.txt"], "status": 200, "outcome": "answered", "latency_ms": 1852, "retrieval_ms": 62, "model_ms": 1790, "attempts": 2, "retries": ["server"], "cache_hit": false, "prompt_tokens": 620, "output_tokens": 41, "error": null}
+{"ts": "2026-11-10T01:48:41.326+00:00", "request_id": "31f38d2361c2", "question": "How late in the term can I declare a course pass/fail?", "fault": "server_error:1", "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. \n\nSource: admin_pass_fail_option.txt", "refused": false, "best_distance": 0.2154, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "status": 200, "outcome": "answered", "latency_ms": 1774, "retrieval_ms": 65, "model_ms": 1709, "attempts": 2, "retries": ["server"], "cache_hit": false, "prompt_tokens": 547, "output_tokens": 35, "error": null}
+{"ts": "2026-11-10T01:48:54.019+00:00", "request_id": "e90d0854fc93", "question": "How much printing does each student get per semester, and does it roll over?", "fault": "empty", "status": 502, "outcome": "model_empty", "latency_ms": 7080, "retrieval_ms": 69, "model_ms": 7012, "attempts": 4, "retries": ["empty", "empty", "empty", "empty"], "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "Model returned no text. 4 attempt(s); last error: injected: model returned no text"}
+{"ts": "2026-11-10T01:49:01.099+00:00", "request_id": "68001e023384", "question": "How late in the term can I declare a course pass/fail?", "fault": "empty", "status": 502, "outcome": "model_empty", "latency_ms": 7078, "retrieval_ms": 66, "model_ms": 7012, "attempts": 4, "retries": ["empty", "empty", "empty", "empty"], "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "Model returned no text. 4 attempt(s); last error: injected: model returned no text"}
+```
+
+## What It Costs
+
+**Per answered request: 598.6 input tokens + 38.9 output tokens ≈ $0.00028.**
+
+How I measured it: with the cache off (`AI201_CACHE=0`), I sent my five Week 2
+in-corpus questions twice each — ten real model calls — through the running
+service and averaged the `prompt_tokens` and `output_tokens` fields the log
+records from Gemini's own `usage_metadata` (first ten records of
+`logs/requests.jsonl`). Input ranged 547–664 tokens, output 35–41. To turn
+tokens into dollars I used gemini-3.5-flash-lite's listed price of $0.30 per
+million input tokens and $2.50 per million output tokens:
+
+    598.6 × $0.30 / 1,000,000 = $0.000180
+     38.9 × $2.50 / 1,000,000 = $0.000097
+                         total ≈ $0.000277 per answered request
+
+Refused questions cost **$0** — the gate stops them before any model call
+(the five out-of-scope requests logged 0 tokens and ~70 ms). Mean latency over
+the ten answered requests was 852 ms, of which ~70 ms is retrieval.
+
+**A hundred people a day:** if each asks 5 questions, that's 500 requests/day ×
+$0.000277 = **$0.14/day**, about **$4.20/month**. On the free tier I actually
+use, it's $0 — the binding cost there is quota, not money: 500 requests/day
+fits, but the limiter's 30 requests/minute would make a burst of 100 people
+asking at once queue for over 15 minutes.
