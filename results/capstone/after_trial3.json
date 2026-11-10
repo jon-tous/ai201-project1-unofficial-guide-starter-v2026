@@ -1,0 +1,1136 @@
+{
+  "label": "after",
+  "trial": 3,
+  "started": "2026-11-09T22:22:23-0500",
+  "C1": {
+    "score": "20/20",
+    "met": true,
+    "rows": [
+      {
+        "status": 200,
+        "secs": 3.583,
+        "request_id": "94cefa6291f3",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "94cefa6291f3",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"94cefa6291f3\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "kind": "in_corpus",
+        "name": "How much printing does each student get per semester, and does it roll over?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 5.018,
+        "request_id": "3469da126c5f",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. \n\nSource: admin_pass_fail_option.txt",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "3469da126c5f",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm. \\n\\nSource: admin_pass_fail_option.txt\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"3469da126c5f\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "kind": "in_corpus",
+        "name": "How late in the term can I declare a course pass/fail?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 5.019,
+        "request_id": "8834189aa7cc",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "8834189aa7cc",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"8834189aa7cc\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "kind": "in_corpus",
+        "name": "By what time are the sandwiches at The Atrium usually picked clean?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 3.613,
+        "request_id": "57a83cfa1a07",
+        "json": {
+          "answer": "You should expect 8 to 10 hours a week outside class for CS 210 (Source: `course_cs_210_workload.txt`).",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "57a83cfa1a07",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You should expect 8 to 10 hours a week outside class for CS 210 (Source: `course_cs_210_workload.txt`).\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"57a83cfa1a07\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "kind": "in_corpus",
+        "name": "How many hours a week outside class should I expect for CS 210?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 8.062,
+        "request_id": "0fd6c64ab350",
+        "json": {
+          "answer": "For juniors and seniors, the housing lottery order is decided first by accumulated credit hours, with any ties broken randomly. \n\nSource: `admin_housing_lottery.txt`",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "0fd6c64ab350",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, the housing lottery order is decided first by accumulated credit hours, with any ties broken randomly. \\n\\nSource: `admin_housing_lottery.txt`\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"0fd6c64ab350\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"housing_tamsin_court.txt\"]",
+        "kind": "in_corpus",
+        "name": "How is housing lottery order decided for juniors and seniors?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 0.062,
+        "request_id": "1511dbec28e4",
+        "json": {
+          "answer": "I don't have enough information about that.",
+          "best_distance": 0.6715,
+          "corpus": "campus_life",
+          "question": "How do I request a safety escort to walk home at night?",
+          "refused": true,
+          "request_id": "1511dbec28e4",
+          "sources": [],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"I don't have enough information about that.\",\"best_distance\":0.6715,\"corpus\":\"campus_life\",\"question\":\"How do I request a safety escort to walk home at night?\",\"refused\":true,\"request_id\":\"1511dbec28e4\",\"sources\":[],\"threshold\":0.45}\n",
+        "kind": "out_of_scope",
+        "name": "How do I request a safety escort to walk home at night?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 0.059,
+        "request_id": "8e2b87cf9769",
+        "json": {
+          "answer": "I don't have enough information about that.",
+          "best_distance": 0.6169,
+          "corpus": "campus_life",
+          "question": "How do I sign up for a campus gym membership?",
+          "refused": true,
+          "request_id": "8e2b87cf9769",
+          "sources": [],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"I don't have enough information about that.\",\"best_distance\":0.6169,\"corpus\":\"campus_life\",\"question\":\"How do I sign up for a campus gym membership?\",\"refused\":true,\"request_id\":\"8e2b87cf9769\",\"sources\":[],\"threshold\":0.45}\n",
+        "kind": "out_of_scope",
+        "name": "How do I sign up for a campus gym membership?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 0.06,
+        "request_id": "f351b0efc36f",
+        "json": {
+          "answer": "I don't have enough information about that.",
+          "best_distance": 0.598,
+          "corpus": "campus_life",
+          "question": "How do I book a tutoring appointment for calculus?",
+          "refused": true,
+          "request_id": "f351b0efc36f",
+          "sources": [],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"I don't have enough information about that.\",\"best_distance\":0.598,\"corpus\":\"campus_life\",\"question\":\"How do I book a tutoring appointment for calculus?\",\"refused\":true,\"request_id\":\"f351b0efc36f\",\"sources\":[],\"threshold\":0.45}\n",
+        "kind": "out_of_scope",
+        "name": "How do I book a tutoring appointment for calculus?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 0.059,
+        "request_id": "fc33fa09a9ee",
+        "json": {
+          "answer": "I don't have enough information about that.",
+          "best_distance": 0.714,
+          "corpus": "campus_life",
+          "question": "How do I report a lost student ID card?",
+          "refused": true,
+          "request_id": "fc33fa09a9ee",
+          "sources": [],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"I don't have enough information about that.\",\"best_distance\":0.714,\"corpus\":\"campus_life\",\"question\":\"How do I report a lost student ID card?\",\"refused\":true,\"request_id\":\"fc33fa09a9ee\",\"sources\":[],\"threshold\":0.45}\n",
+        "kind": "out_of_scope",
+        "name": "How do I report a lost student ID card?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 0.06,
+        "request_id": "7a133b32c199",
+        "json": {
+          "answer": "I don't have enough information about that.",
+          "best_distance": 0.6408,
+          "corpus": "campus_life",
+          "question": "How do I appeal a parking ticket I think was issued unfairly?",
+          "refused": true,
+          "request_id": "7a133b32c199",
+          "sources": [],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"I don't have enough information about that.\",\"best_distance\":0.6408,\"corpus\":\"campus_life\",\"question\":\"How do I appeal a parking ticket I think was issued unfairly?\",\"refused\":true,\"request_id\":\"7a133b32c199\",\"sources\":[],\"threshold\":0.45}\n",
+        "kind": "out_of_scope",
+        "name": "How do I appeal a parking ticket I think was issued unfairly?",
+        "c1_log_count": 1,
+        "c1_log_status": 200,
+        "c1_pass": true
+      },
+      {
+        "status": 400,
+        "secs": 0.002,
+        "request_id": "6bec6aab0645",
+        "json": {
+          "error": "\"question\" must be a string, not int.",
+          "kind": "bad_input",
+          "request_id": "6bec6aab0645"
+        },
+        "text": "{\"error\":\"\\\"question\\\" must be a string, not int.\",\"kind\":\"bad_input\",\"request_id\":\"6bec6aab0645\"}\n",
+        "kind": "malformed",
+        "name": "non_string",
+        "c1_log_count": 1,
+        "c1_log_status": 400,
+        "c1_pass": true,
+        "c4_expected_status": 400,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 400,
+        "secs": 0.001,
+        "request_id": "635e130312f9",
+        "json": {
+          "error": "\"question\" is empty. Ask something, like \"is the housing lottery random?\"",
+          "kind": "bad_input",
+          "request_id": "635e130312f9"
+        },
+        "text": "{\"error\":\"\\\"question\\\" is empty. Ask something, like \\\"is the housing lottery random?\\\"\",\"kind\":\"bad_input\",\"request_id\":\"635e130312f9\"}\n",
+        "kind": "malformed",
+        "name": "empty_string",
+        "c1_log_count": 1,
+        "c1_log_status": 400,
+        "c1_pass": true,
+        "c4_expected_status": 400,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 400,
+        "secs": 0.001,
+        "request_id": "532f2d243f78",
+        "json": {
+          "error": "\"question\" is 600 characters; the limit is 500. Ask one specific thing.",
+          "kind": "bad_input",
+          "request_id": "532f2d243f78"
+        },
+        "text": "{\"error\":\"\\\"question\\\" is 600 characters; the limit is 500. Ask one specific thing.\",\"kind\":\"bad_input\",\"request_id\":\"532f2d243f78\"}\n",
+        "kind": "malformed",
+        "name": "too_long_600",
+        "c1_log_count": 1,
+        "c1_log_status": 400,
+        "c1_pass": true,
+        "c4_expected_status": 400,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 400,
+        "secs": 0.001,
+        "request_id": "e705d4bf749c",
+        "json": {
+          "error": "Send a JSON object, like {\"question\": \"is the housing lottery random?\"}",
+          "kind": "bad_input",
+          "request_id": "e705d4bf749c"
+        },
+        "text": "{\"error\":\"Send a JSON object, like {\\\"question\\\": \\\"is the housing lottery random?\\\"}\",\"kind\":\"bad_input\",\"request_id\":\"e705d4bf749c\"}\n",
+        "kind": "malformed",
+        "name": "json_array",
+        "c1_log_count": 1,
+        "c1_log_status": 400,
+        "c1_pass": true,
+        "c4_expected_status": 400,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 400,
+        "secs": 0.001,
+        "request_id": "b1cd678d22ff",
+        "json": {
+          "error": "Send a JSON object, like {\"question\": \"is the housing lottery random?\"}",
+          "kind": "bad_input",
+          "request_id": "b1cd678d22ff"
+        },
+        "text": "{\"error\":\"Send a JSON object, like {\\\"question\\\": \\\"is the housing lottery random?\\\"}\",\"kind\":\"bad_input\",\"request_id\":\"b1cd678d22ff\"}\n",
+        "kind": "malformed",
+        "name": "non_json",
+        "c1_log_count": 1,
+        "c1_log_status": 400,
+        "c1_pass": true,
+        "c4_expected_status": 400,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 504,
+        "secs": 21.095,
+        "request_id": "3ce44f296b5c",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "3ce44f296b5c"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"3ce44f296b5c\"}\n",
+        "kind": "fault",
+        "name": "timeout",
+        "c1_log_count": 1,
+        "c1_log_status": 504,
+        "c1_pass": true,
+        "c4_expected_status": 504,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 503,
+        "secs": 7.091,
+        "request_id": "1ed7f973adce",
+        "json": {
+          "error": "The answer service is temporarily unavailable. Please try again in a moment.",
+          "kind": "model_unavailable",
+          "request_id": "1ed7f973adce"
+        },
+        "text": "{\"error\":\"The answer service is temporarily unavailable. Please try again in a moment.\",\"kind\":\"model_unavailable\",\"request_id\":\"1ed7f973adce\"}\n",
+        "kind": "fault",
+        "name": "server_error",
+        "c1_log_count": 1,
+        "c1_log_status": 503,
+        "c1_pass": true,
+        "c4_expected_status": 503,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 503,
+        "secs": 7.096,
+        "request_id": "a4c881314c7b",
+        "json": {
+          "error": "The answer service is temporarily unavailable. Please try again in a moment.",
+          "kind": "model_unavailable",
+          "request_id": "a4c881314c7b"
+        },
+        "text": "{\"error\":\"The answer service is temporarily unavailable. Please try again in a moment.\",\"kind\":\"model_unavailable\",\"request_id\":\"a4c881314c7b\"}\n",
+        "kind": "fault",
+        "name": "rate_limit",
+        "c1_log_count": 1,
+        "c1_log_status": 503,
+        "c1_pass": true,
+        "c4_expected_status": 503,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 502,
+        "secs": 7.096,
+        "request_id": "587503e81ce8",
+        "json": {
+          "error": "The answer service returned an empty response. Please try rephrasing your question.",
+          "kind": "model_empty",
+          "request_id": "587503e81ce8"
+        },
+        "text": "{\"error\":\"The answer service returned an empty response. Please try rephrasing your question.\",\"kind\":\"model_empty\",\"request_id\":\"587503e81ce8\"}\n",
+        "kind": "fault",
+        "name": "empty",
+        "c1_log_count": 1,
+        "c1_log_status": 502,
+        "c1_pass": true,
+        "c4_expected_status": 502,
+        "c4_pass": true,
+        "c4_why": "ok"
+      },
+      {
+        "status": 502,
+        "secs": 0.066,
+        "request_id": "5a1000379eab",
+        "json": {
+          "error": "The answer service rejected the request. The operator has been notified in the log.",
+          "kind": "model_error",
+          "request_id": "5a1000379eab"
+        },
+        "text": "{\"error\":\"The answer service rejected the request. The operator has been notified in the log.\",\"kind\":\"model_error\",\"request_id\":\"5a1000379eab\"}\n",
+        "kind": "fault",
+        "name": "bad_key",
+        "c1_log_count": 1,
+        "c1_log_status": 502,
+        "c1_pass": true,
+        "c4_expected_status": 502,
+        "c4_pass": true,
+        "c4_why": "ok"
+      }
+    ]
+  },
+  "C2": {
+    "score": "1/5",
+    "met": false,
+    "rows": [
+      {
+        "status": 200,
+        "secs": 7.01,
+        "request_id": "598bf13d516f",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "598bf13d516f",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"598bf13d516f\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "question": "How much printing does each student get per semester, and does it roll over?",
+        "log_attempts": 3,
+        "log_retries": [
+          "server",
+          "server"
+        ],
+        "c2_pass": false
+      },
+      {
+        "status": 200,
+        "secs": 5.414,
+        "request_id": "b4f4c8deda01",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. (Source: admin_pass_fail_option.txt)",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "b4f4c8deda01",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm. (Source: admin_pass_fail_option.txt)\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"b4f4c8deda01\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "question": "How late in the term can I declare a course pass/fail?",
+        "log_attempts": 3,
+        "log_retries": [
+          "server",
+          "server"
+        ],
+        "c2_pass": true
+      },
+      {
+        "status": 200,
+        "secs": 9.794,
+        "request_id": "ff781ce9091e",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "ff781ce9091e",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"ff781ce9091e\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+        "log_attempts": 3,
+        "log_retries": [
+          "server",
+          "server"
+        ],
+        "c2_pass": false
+      },
+      {
+        "status": 200,
+        "secs": 6.361,
+        "request_id": "607d58505c8e",
+        "json": {
+          "answer": "You should expect 8 to 10 hours a week outside class for CS 210. \n\nSource: course_cs_210_workload.txt",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "607d58505c8e",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You should expect 8 to 10 hours a week outside class for CS 210. \\n\\nSource: course_cs_210_workload.txt\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"607d58505c8e\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "question": "How many hours a week outside class should I expect for CS 210?",
+        "log_attempts": 3,
+        "log_retries": [
+          "server",
+          "server"
+        ],
+        "c2_pass": false
+      },
+      {
+        "status": 200,
+        "secs": 9.766,
+        "request_id": "1eef43f1f088",
+        "json": {
+          "answer": "For juniors and seniors, housing lottery order is determined by accumulated credit hours first, with ties broken randomly. \n\nSource: admin_housing_lottery.txt",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "1eef43f1f088",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, housing lottery order is determined by accumulated credit hours first, with ties broken randomly. \\n\\nSource: admin_housing_lottery.txt\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"1eef43f1f088\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"housing_tamsin_court.txt\"],\"thres",
+        "question": "How is housing lottery order decided for juniors and seniors?",
+        "log_attempts": 3,
+        "log_retries": [
+          "server",
+          "server"
+        ],
+        "c2_pass": false
+      }
+    ]
+  },
+  "C3": {
+    "score": "5/5",
+    "met": true,
+    "secs": [
+      21.147,
+      21.149,
+      21.153,
+      21.153,
+      21.156
+    ],
+    "rows": [
+      {
+        "status": 504,
+        "secs": 21.149,
+        "request_id": "c8be290d6b72",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "c8be290d6b72"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"c8be290d6b72\"}\n",
+        "c3_pass": true
+      },
+      {
+        "status": 504,
+        "secs": 21.153,
+        "request_id": "bbbcc211fa5a",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "bbbcc211fa5a"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"bbbcc211fa5a\"}\n",
+        "c3_pass": true
+      },
+      {
+        "status": 504,
+        "secs": 21.147,
+        "request_id": "4ad5ee7ed616",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "4ad5ee7ed616"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"4ad5ee7ed616\"}\n",
+        "c3_pass": true
+      },
+      {
+        "status": 504,
+        "secs": 21.153,
+        "request_id": "5b482a012f52",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "5b482a012f52"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"5b482a012f52\"}\n",
+        "c3_pass": true
+      },
+      {
+        "status": 504,
+        "secs": 21.156,
+        "request_id": "dc75993aa637",
+        "json": {
+          "error": "The answer service took too long to respond. Please try again in a moment.",
+          "kind": "model_timeout",
+          "request_id": "dc75993aa637"
+        },
+        "text": "{\"error\":\"The answer service took too long to respond. Please try again in a moment.\",\"kind\":\"model_timeout\",\"request_id\":\"dc75993aa637\"}\n",
+        "c3_pass": true
+      }
+    ]
+  },
+  "C4": {
+    "score": "10/10",
+    "met": true
+  },
+  "C5": {
+    "score": "20/20 answered, 1/20 <2.0s",
+    "met": false,
+    "max_secs": 13.912,
+    "rows": [
+      {
+        "status": 200,
+        "secs": 4.845,
+        "request_id": "080fa67be377",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "080fa67be377",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"080fa67be377\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "question": "How much printing does each student get per semester, and does it roll over?"
+      },
+      {
+        "status": 200,
+        "secs": 13.912,
+        "request_id": "25573f421651",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm (admin_pass_fail_option.txt).",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "25573f421651",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm (admin_pass_fail_option.txt).\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"25573f421651\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "question": "How late in the term can I declare a course pass/fail?"
+      },
+      {
+        "status": 200,
+        "secs": 6.626,
+        "request_id": "d4163b7acaea",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "d4163b7acaea",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"d4163b7acaea\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?"
+      },
+      {
+        "status": 200,
+        "secs": 7.632,
+        "request_id": "46eb9bea7ca2",
+        "json": {
+          "answer": "You should expect 8 to 10 hours a week outside of class for CS 210. \n\nSource: course_cs_210_workload.txt",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "46eb9bea7ca2",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You should expect 8 to 10 hours a week outside of class for CS 210. \\n\\nSource: course_cs_210_workload.txt\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"46eb9bea7ca2\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "question": "How many hours a week outside class should I expect for CS 210?"
+      },
+      {
+        "status": 200,
+        "secs": 8.392,
+        "request_id": "0b23e9eaae87",
+        "json": {
+          "answer": "For juniors and seniors, housing lottery order is decided by accumulated credit hours first, with ties broken randomly (admin_housing_lottery.txt).",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "0b23e9eaae87",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, housing lottery order is decided by accumulated credit hours first, with ties broken randomly (admin_housing_lottery.txt).\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"0b23e9eaae87\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"housing_tamsin_court.txt\"],\"threshold\":0.45}\n",
+        "question": "How is housing lottery order decided for juniors and seniors?"
+      },
+      {
+        "status": 200,
+        "secs": 5.799,
+        "request_id": "ed3976699b1b",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "ed3976699b1b",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"ed3976699b1b\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "question": "How much printing does each student get per semester, and does it roll over?"
+      },
+      {
+        "status": 200,
+        "secs": 1.922,
+        "request_id": "4cef7dbdd252",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. \n\nSource: admin_pass_fail_option.txt",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "4cef7dbdd252",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm. \\n\\nSource: admin_pass_fail_option.txt\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"4cef7dbdd252\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "question": "How late in the term can I declare a course pass/fail?"
+      },
+      {
+        "status": 200,
+        "secs": 2.095,
+        "request_id": "fcf7f369d6cb",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "fcf7f369d6cb",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"fcf7f369d6cb\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?"
+      },
+      {
+        "status": 200,
+        "secs": 2.958,
+        "request_id": "f9637dda666a",
+        "json": {
+          "answer": "You should expect 8 to 10 hours a week outside class for CS 210 (Source: course_cs_210_workload.txt).",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "f9637dda666a",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You should expect 8 to 10 hours a week outside class for CS 210 (Source: course_cs_210_workload.txt).\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"f9637dda666a\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "question": "How many hours a week outside class should I expect for CS 210?"
+      },
+      {
+        "status": 200,
+        "secs": 5.702,
+        "request_id": "a8c569661fdd",
+        "json": {
+          "answer": "For juniors and seniors, housing lottery order is decided by accumulated credit hours first, with a random tie-break used if needed (admin_housing_lottery.txt).",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "a8c569661fdd",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, housing lottery order is decided by accumulated credit hours first, with a random tie-break used if needed (admin_housing_lottery.txt).\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"a8c569661fdd\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"housing_tamsin_court.txt\"],\"thres",
+        "question": "How is housing lottery order decided for juniors and seniors?"
+      },
+      {
+        "status": 200,
+        "secs": 4.134,
+        "request_id": "f54df8a37d69",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "f54df8a37d69",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"f54df8a37d69\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "question": "How much printing does each student get per semester, and does it roll over?"
+      },
+      {
+        "status": 200,
+        "secs": 4.195,
+        "request_id": "67e4675e13bf",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. \n\nSource: `admin_pass_fail_option.txt`",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "67e4675e13bf",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm. \\n\\nSource: `admin_pass_fail_option.txt`\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"67e4675e13bf\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "question": "How late in the term can I declare a course pass/fail?"
+      },
+      {
+        "status": 200,
+        "secs": 5.377,
+        "request_id": "30bd525bf2ab",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "30bd525bf2ab",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"30bd525bf2ab\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?"
+      },
+      {
+        "status": 200,
+        "secs": 7.582,
+        "request_id": "a9f2aa4ee485",
+        "json": {
+          "answer": "For CS 210, you should expect 8 to 10 hours a week outside class (course_cs_210_workload.txt).",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "a9f2aa4ee485",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For CS 210, you should expect 8 to 10 hours a week outside class (course_cs_210_workload.txt).\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"a9f2aa4ee485\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "question": "How many hours a week outside class should I expect for CS 210?"
+      },
+      {
+        "status": 200,
+        "secs": 3.737,
+        "request_id": "84cf072d384e",
+        "json": {
+          "answer": "For juniors and seniors, housing lottery order is determined by accumulated credit hours first, with ties broken randomly (admin_housing_lottery.txt).",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "84cf072d384e",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, housing lottery order is determined by accumulated credit hours first, with ties broken randomly (admin_housing_lottery.txt).\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"84cf072d384e\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"housing_tamsin_court.txt\"],\"threshold\":0.45",
+        "question": "How is housing lottery order decided for juniors and seniors?"
+      },
+      {
+        "status": 200,
+        "secs": 5.423,
+        "request_id": "35346728c28f",
+        "json": {
+          "answer": "Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \n\nSource: admin_printing_quota.txt",
+          "best_distance": 0.2598,
+          "corpus": "campus_life",
+          "question": "How much printing does each student get per semester, and does it roll over?",
+          "refused": false,
+          "request_id": "35346728c28f",
+          "sources": [
+            "admin_printing_quota.txt",
+            "course_cs_210.txt",
+            "course_cs_340.txt",
+            "money_jobs.txt",
+            "money_textbooks.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"Each student gets $30 of printing per semester (roughly 600 black-and-white pages), and it does not roll over. \\n\\nSource: admin_printing_quota.txt\",\"best_distance\":0.2598,\"corpus\":\"campus_life\",\"question\":\"How much printing does each student get per semester, and does it roll over?\",\"refused\":false,\"request_id\":\"35346728c28f\",\"sources\":[\"admin_printing_quota.txt\",\"course_cs_210.txt\",\"course_cs_340.txt\",\"money_jobs.txt\",\"money_textbooks.txt\"],\"threshold\":0.45}\n",
+        "question": "How much printing does each student get per semester, and does it roll over?"
+      },
+      {
+        "status": 200,
+        "secs": 5.325,
+        "request_id": "77d9815c1f13",
+        "json": {
+          "answer": "You can declare a course pass/fail as late as week eight, after you've seen your midterm. \n\nSource: admin_pass_fail_option.txt",
+          "best_distance": 0.2154,
+          "corpus": "campus_life",
+          "question": "How late in the term can I declare a course pass/fail?",
+          "refused": false,
+          "request_id": "77d9815c1f13",
+          "sources": [
+            "admin_add_drop_deadline.txt",
+            "admin_declaring_a_major.txt",
+            "admin_graduation_requirements.txt",
+            "admin_pass_fail_option.txt",
+            "course_cs_340.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"You can declare a course pass/fail as late as week eight, after you've seen your midterm. \\n\\nSource: admin_pass_fail_option.txt\",\"best_distance\":0.2154,\"corpus\":\"campus_life\",\"question\":\"How late in the term can I declare a course pass/fail?\",\"refused\":false,\"request_id\":\"77d9815c1f13\",\"sources\":[\"admin_add_drop_deadline.txt\",\"admin_declaring_a_major.txt\",\"admin_graduation_requirements.txt\",\"admin_pass_fail_option.txt\",\"course_cs_340.txt\"],\"threshold\":0.45}\n",
+        "question": "How late in the term can I declare a course pass/fail?"
+      },
+      {
+        "status": 200,
+        "secs": 6.094,
+        "request_id": "c19f1f5f5b86",
+        "json": {
+          "answer": "The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)",
+          "best_distance": 0.2952,
+          "corpus": "campus_life",
+          "question": "By what time are the sandwiches at The Atrium usually picked clean?",
+          "refused": false,
+          "request_id": "c19f1f5f5b86",
+          "sources": [
+            "dining_halden_hall_followup.txt",
+            "dining_kestrel_commons_followup.txt",
+            "dining_north_kitchen_followup.txt",
+            "dining_the_atrium.txt",
+            "dining_the_atrium_followup.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"The sandwiches at The Atrium are usually picked clean by 1:15. (Source: dining_the_atrium.txt and dining_the_atrium_followup.txt)\",\"best_distance\":0.2952,\"corpus\":\"campus_life\",\"question\":\"By what time are the sandwiches at The Atrium usually picked clean?\",\"refused\":false,\"request_id\":\"c19f1f5f5b86\",\"sources\":[\"dining_halden_hall_followup.txt\",\"dining_kestrel_commons_followup.txt\",\"dining_north_kitchen_followup.txt\",\"dining_the_atrium.txt\",\"dining_the_atrium_followup.txt\"],\"threshold",
+        "question": "By what time are the sandwiches at The Atrium usually picked clean?"
+      },
+      {
+        "status": 200,
+        "secs": 2.53,
+        "request_id": "1d89c66bd70e",
+        "json": {
+          "answer": "For CS 210, you should expect 8 to 10 hours a week outside class (from `course_cs_210_workload.txt`).",
+          "best_distance": 0.2775,
+          "corpus": "campus_life",
+          "question": "How many hours a week outside class should I expect for CS 210?",
+          "refused": false,
+          "request_id": "1d89c66bd70e",
+          "sources": [
+            "course_cs_210_workload.txt",
+            "course_cs_340.txt",
+            "course_econ_101_workload.txt",
+            "course_engl_205_workload.txt",
+            "course_stat_150_workload.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For CS 210, you should expect 8 to 10 hours a week outside class (from `course_cs_210_workload.txt`).\",\"best_distance\":0.2775,\"corpus\":\"campus_life\",\"question\":\"How many hours a week outside class should I expect for CS 210?\",\"refused\":false,\"request_id\":\"1d89c66bd70e\",\"sources\":[\"course_cs_210_workload.txt\",\"course_cs_340.txt\",\"course_econ_101_workload.txt\",\"course_engl_205_workload.txt\",\"course_stat_150_workload.txt\"],\"threshold\":0.45}\n",
+        "question": "How many hours a week outside class should I expect for CS 210?"
+      },
+      {
+        "status": 200,
+        "secs": 4.996,
+        "request_id": "6c072993162d",
+        "json": {
+          "answer": "For juniors and seniors, the housing lottery order is determined first by accumulated credit hours, with random tie-breaking used only when necessary. \n\nSource: `admin_housing_lottery.txt`",
+          "best_distance": 0.2143,
+          "corpus": "campus_life",
+          "question": "How is housing lottery order decided for juniors and seniors?",
+          "refused": false,
+          "request_id": "6c072993162d",
+          "sources": [
+            "admin_housing_lottery.txt",
+            "admin_parking_permits.txt",
+            "advising_registration.txt",
+            "dining_the_atrium_followup.txt",
+            "housing_tamsin_court.txt"
+          ],
+          "threshold": 0.45
+        },
+        "text": "{\"answer\":\"For juniors and seniors, the housing lottery order is determined first by accumulated credit hours, with random tie-breaking used only when necessary. \\n\\nSource: `admin_housing_lottery.txt`\",\"best_distance\":0.2143,\"corpus\":\"campus_life\",\"question\":\"How is housing lottery order decided for juniors and seniors?\",\"refused\":false,\"request_id\":\"6c072993162d\",\"sources\":[\"admin_housing_lottery.txt\",\"admin_parking_permits.txt\",\"advising_registration.txt\",\"dining_the_atrium_followup.txt\",\"hou",
+        "question": "How is housing lottery order decided for juniors and seniors?"
+      }
+    ]
+  }
+}

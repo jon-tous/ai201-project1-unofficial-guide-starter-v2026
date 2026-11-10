@@ -731,3 +731,114 @@ part of Gemini's 429 that names which quota was hit.
 
 **C1 and C4 met in all three trials.** The logging and the error contract held for every
 request, including the 429-driven failures nobody planned for in C5.
+
+## The Improvement
+
+**What I changed:** one line in `run.sh` — gunicorn `--threads 4` → `--threads 8`
+(commit `fb91c24`).
+
+**Why:** it's aimed at the C3 diagnosis. The fifth concurrent request missed 30 s only
+because it queued for a thread behind four requests that each held one for ~21 s. With
+8 threads, five hung requests all run at once. A hung request spends almost all of its
+time asleep (waiting on the model or on backoff), so extra threads cost almost nothing.
+
+**Second run log, same format, same harness** (`tools/trials.py --label after`):
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Every request leaves exactly one matching log record | 20 of 20 | 20/20 | 20/20 | 20/20 | **MET** |
+| 2. Two injected 503s → 200 answer in < 6 s, log shows 3 attempts | 5 of 5 | 1/5 | 1/5 | 1/5 | **MISSED** |
+| 3. 5 concurrent timed-out requests each get a 504 in < 30 s | 5 of 5 | 5/5 | 5/5 | 5/5 | **MET** |
+| 4. Every bad-path response follows the error contract | 10 of 10 | 10/10 | 10/10 | 10/10 | **MET** |
+| 5. Warm normal path: 20/20 answered and ≥ 18/20 < 2.0 s | both | 19/20, 1/20 fast | 20/20, 1/20 | 20/20, 1/20 | **MISSED** |
+
+```
+after_trial1  (2026-11-09T22:11:18-0500)
+  C1  20/20                        MET
+  C2  1/5                          MISSED  secs=[4.475, 6.199, 6.152, 6.24, 7.462]
+  C3  5/5                          MET  secs=[21.14, 21.147, 21.157, 21.158, 21.159]
+  C4  10/10                        MET
+  C5  19/20 answered, 1/20 <2.0s   MISSED  max=20.479s
+
+after_trial2  (2026-11-09T22:16:31-0500)
+  C1  20/20                        MET
+  C2  1/5                          MISSED  secs=[9.415, 7.464, 23.464, 5.96, 6.617]
+  C3  5/5                          MET  secs=[21.134, 21.148, 21.166, 21.167, 21.168]
+  C4  10/10                        MET
+  C5  20/20 answered, 1/20 <2.0s   MISSED  max=14.52s
+
+after_trial3  (2026-11-09T22:22:23-0500)
+  C1  20/20                        MET
+  C2  1/5                          MISSED  secs=[7.01, 5.414, 9.794, 6.361, 9.766]
+  C3  5/5                          MET  secs=[21.147, 21.149, 21.153, 21.153, 21.156]
+  C4  10/10                        MET
+  C5  20/20 answered, 1/20 <2.0s   MISSED  max=13.912s
+```
+
+**Side by side:**
+
+| Criterion | Before (runs 1/2/3) | After (runs 1/2/3) | Change |
+|---|---|---|---|
+| 1 | 20/20, 20/20, 20/20 — MET | 20/20, 20/20, 20/20 — MET | none |
+| 2 | 5/5, 1/5, 0/5 — MISSED | 1/5, 1/5, 1/5 — MISSED | not affected by the fix (see below) |
+| 3 | 4/5, 4/5, 4/5 — MISSED (5th at 42.2 s) | 5/5, 5/5, 5/5 — MET (all ≤ 21.17 s) | **fixed** |
+| 4 | 10/10 ×3 — MET | 10/10 ×3 — MET | none |
+| 5 | 16/20, 19/20, 6/20 fast — MISSED | 1/20, 1/20, 1/20 fast — MISSED | worse, but not caused by the fix |
+
+**Did it help?** Yes, for what it targeted: C3 went from 4/5 to 5/5 in every trial, and
+the slowest of five concurrent hung requests dropped from 42.2 s to 21.2 s. It didn't
+break anything — C1 and C4 still held 20/20 and 10/10.
+
+**Why C5 got worse, and why it isn't the fix:** C5 sends its requests one at a time, so
+the thread count can't touch it. The stage timings in the log show where the time went
+(median of single-attempt requests in each trial's C5):
+
+| Trial | threads | retrieval_ms | model_ms | output tokens |
+|---|---|---|---|---|
+| before 1 | 4 | 64 | 722 | 36 |
+| before 2 | 4 | 65 | 667 | 38 |
+| before 3 | 4 | 63 | **4,809** | 39 |
+| after 1 | 8 | 64 | **4,850** | 36 |
+| after 2 | 8 | 65 | **4,746** | 36 |
+| after 3 | 8 | 63 | **5,259** | 38 |
+
+The jump happened at *before* trial 3 — still on 4 threads — and stayed. Retrieval and
+answer length didn't move; the whole increase is inside the Gemini call. That's the same
+upstream slowdown diagnosed under C5/C2, and C2's after-runs miss on time for the same
+reason (retry logic still correct: every C2 request returned a 200 answer). The honest
+limit of this comparison: because Gemini's speed changed between runs, C2 and C5 can't
+say anything about the fix either way.
+
+**What the fix doesn't do:** it moves the limit, not the mechanism. The deadline still
+can't see queue time, so nine concurrent hung requests would put the ninth at ~42 s
+again.
+
+## What's Still Broken
+
+- **C3 is met at 5 concurrent, but the mechanism is still there.** The 30 s deadline
+  starts inside `generate.py::generate`, not when the request arrives, so any burst
+  larger than the thread count queues invisibly. *What I'd do:* stamp the arrival time
+  in `serve.py::ask` and pass the remaining budget into `generate()`, so a request that
+  queued gets a shorter retry budget, or a fast 503 if it has none left. *Why I stopped:*
+  the brief asks for one improvement, and the thread change fixed the criterion as
+  written. The deadline change also changes behaviour (a queued request fails fast
+  instead of being answered late), which deserves its own criterion first.
+- **C5 (normal-path latency) is missed, and the cause is upstream.** Gemini went from
+  ~0.7 s to ~5 s per call partway through testing, and earlier returned real 429s after
+  ~16 calls in 15 s. *What I'd do:* set `REQUESTS_PER_MINUTE` to the key's real limit
+  (measured, ~15/min, not the assumed 30) so the system paces itself instead of being
+  refused, and on a 429 wait out the delay Gemini asks for instead of 1–2–4 s. That
+  would stop the 503s; it would not make calls faster — a 2 s target on a shared free-tier
+  key may simply not be achievable during heavy use, and I'd say so rather than lower the
+  target. *Why I stopped:* the fix can't be measured cleanly while the provider's own
+  latency is moving under it.
+- **C2 (recovery in under 6 s) is missed on time only.** The retry behaviour was correct
+  in 30 of 30 requests across both runs; the time limit failed because the final real
+  call was slow. Same cause and same reason for stopping as C5.
+- **The log is missing two things the diagnosis needed:** the error text behind each
+  retry (only its kind is kept), and the full 429 message (clipped at 300 characters).
+
+**The one thing I'd do first:** fix the log gaps — record each retry's error text and
+stop clipping the `error` field. Every remaining miss is in the model stage, and right
+now I'm inferring what Gemini did from timings; the next fix should be aimed with
+Gemini's actual words, not guesses.

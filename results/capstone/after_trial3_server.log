@@ -1,0 +1,86 @@
+Serving on http://127.0.0.1:5001   (Ctrl-C to stop; log: logs/requests.jsonl)
+[2026-11-09 22:22:21 -0500] [72350] [INFO] Starting gunicorn 23.0.0
+[2026-11-09 22:22:21 -0500] [72350] [INFO] Listening at: http://0.0.0.0:5001 (72350)
+[2026-11-09 22:22:21 -0500] [72350] [INFO] Using worker: gthread
+[2026-11-09 22:22:21 -0500] [72353] [INFO] Booting worker with pid: 72353
+127.0.0.1 - - [09/Nov/2026:22:22:23 -0500] "GET /health HTTP/1.1" 200 75 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:22:28 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:22:33 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+127.0.0.1 - - [09/Nov/2026:22:22:47 -0500] "POST /ask HTTP/1.1" 200 464 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:22:53 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:01 -0500] "POST /ask HTTP/1.1" 200 458 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:09 -0500] "POST /ask HTTP/1.1" 200 499 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:15 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:17 -0500] "POST /ask HTTP/1.1" 200 474 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:19 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:22 -0500] "POST /ask HTTP/1.1" 200 453 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:28 -0500] "POST /ask HTTP/1.1" 200 512 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:32 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:36 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:41 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:49 -0500] "POST /ask HTTP/1.1" 200 446 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:53 -0500] "POST /ask HTTP/1.1" 200 502 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:23:58 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:04 -0500] "POST /ask HTTP/1.1" 200 474 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:10 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:12 -0500] "POST /ask HTTP/1.1" 200 453 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:17 -0500] "POST /ask HTTP/1.1" 200 542 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:21 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:26 -0500] "POST /ask HTTP/1.1" 200 474 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:31 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:34 -0500] "POST /ask HTTP/1.1" 200 455 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:42 -0500] "POST /ask HTTP/1.1" 200 519 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 200 245 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 200 235 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 200 239 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 200 228 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 200 251 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 400 99 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 400 137 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 400 133 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 400 135 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:24:43 -0500] "POST /ask HTTP/1.1" 400 135 "-" "Python-urllib/3.13"
+  [timeout] retrying in 1s (attempt 1 of 4).
+127.0.0.1 - - [09/Nov/2026:22:25:04 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+  [server] retrying in 4s (attempt 3 of 4).
+127.0.0.1 - - [09/Nov/2026:22:25:11 -0500] "POST /ask HTTP/1.1" 503 144 "-" "Python-urllib/3.13"
+  [rate_limit] retrying in 1s (attempt 1 of 4).
+  [rate_limit] retrying in 2s (attempt 2 of 4).
+  [rate_limit] retrying in 4s (attempt 3 of 4).
+127.0.0.1 - - [09/Nov/2026:22:25:18 -0500] "POST /ask HTTP/1.1" 503 144 "-" "Python-urllib/3.13"
+  [empty] retrying in 1s (attempt 1 of 4).
+  [empty] retrying in 2s (attempt 2 of 4).
+  [empty] retrying in 4s (attempt 3 of 4).
+127.0.0.1 - - [09/Nov/2026:22:25:25 -0500] "POST /ask HTTP/1.1" 502 145 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:25:25 -0500] "POST /ask HTTP/1.1" 502 145 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+127.0.0.1 - - [09/Nov/2026:22:26:33 -0500] "POST /ask HTTP/1.1" 200 476 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+127.0.0.1 - - [09/Nov/2026:22:26:38 -0500] "POST /ask HTTP/1.1" 200 472 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+127.0.0.1 - - [09/Nov/2026:22:26:48 -0500] "POST /ask HTTP/1.1" 200 508 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+127.0.0.1 - - [09/Nov/2026:22:26:54 -0500] "POST /ask HTTP/1.1" 200 455 "-" "Python-urllib/3.13"
+  [server] retrying in 1s (attempt 1 of 4).
+  [server] retrying in 2s (attempt 2 of 4).
+127.0.0.1 - - [09/Nov/2026:22:27:04 -0500] "POST /ask HTTP/1.1" 200 512 "-" "Python-urllib/3.13"
+  [timeout] retrying in 1s (attempt 1 of 4).
+  [timeout] retrying in 1s (attempt 1 of 4).
+  [timeout] retrying in 1s (attempt 1 of 4).
+  [timeout] retrying in 1s (attempt 1 of 4).
+  [timeout] retrying in 1s (attempt 1 of 4).
+127.0.0.1 - - [09/Nov/2026:22:27:25 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:27:25 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:27:25 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:27:25 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+127.0.0.1 - - [09/Nov/2026:22:27:25 -0500] "POST /ask HTTP/1.1" 504 138 "-" "Python-urllib/3.13"
+[2026-11-09 22:27:25 -0500] [72350] [INFO] Handling signal: term
+[2026-11-09 22:27:26 -0500] [72353] [INFO] Worker exiting (pid: 72353)
+[2026-11-09 22:27:27 -0500] [72350] [INFO] Shutting down: Master
