@@ -217,6 +217,8 @@ under criterion 5, instead of taking whichever one came back first.
 
 # Week 2
 
+> Week 2's criteria now live in [criteria_week2.md](criteria_week2.md); references to `criteria.md` in the Week 1–2 sections mean that file. `criteria.md` holds the Week 9 capstone criteria.
+
 <!-- These sections get ADDED to what's already above. Don't delete or rewrite
      week 1 — the point is that someone can see what you said before you knew
      how it went. -->

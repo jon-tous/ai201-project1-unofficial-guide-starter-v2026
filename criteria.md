@@ -1,142 +1,101 @@
-# Acceptance criteria — The Unofficial Guide
+# Capstone Acceptance Criteria — Week 9
 
-Five criteria that say what "working" means for this system, written in week 1
-**before** any results existed.
+System: The Unofficial Guide (`serve.py` `POST /ask`), hardened against failure (Shape B).
+Written before any trial was run. Week 2's criteria are in [criteria_week2.md](criteria_week2.md).
 
-An acceptance criterion names a target: a number, a count, a rate, or something
-a person could plainly observe. *"Retrieval works"* is an opinion. *"For at
-least 4 of my 5 test questions, the top results include a chunk containing the
-answer"* is a criterion.
+Conventions for every criterion:
 
-Under each one, write a sentence or two on **why that target** and not a
-stricter or looser one. A reason that says something about your corpus or your
-pipeline earns credit; *"80% seemed reasonable"* does not.
-
-> Missing your own targets next week costs you nothing. Setting a target so
-> easy you can't miss it does.
-
----
-
-## 1. Retrieved chunks contain the answer
-
-For at least 4 of my 5 test questions, the retrieved chunks include one that
-contains the answer.
-
-**Why this target:** The housing lottery question's answer sentence
-("juniors and seniors are ordered by accumulated credit hours") sits right
-after a sentence about random tie-breaks — I expect that one to be the
-occasional miss, since a similarity search could easily surface the sentence
-about randomness instead. My other four questions each sit alone as the main
-point of a short, single-topic document, so I expect those to retrieve
-cleanly. 4 of 5 gives room for exactly the one I predict will be shaky.
+- Each criterion is tested in **three separate trials** against a server started with
+  `AI201_CACHE=0 AI201_ALLOW_FAULTS=1 ./run.sh` (port 5001), restarted between trials.
+- "Client-side" time is wall-clock from sending the request to receiving the full
+  response, measured by the test driver (`tools/trials.py`), not the log's `latency_ms`.
+- "In-corpus questions" are the five in `questions.py::QUESTIONS`; "out-of-scope
+  questions" are the five in `questions.py::OUT_OF_SCOPE`.
+- Faults are injected with the `X-Fault` header (see RUNNING.md).
+- A target must hold in **all three** trials for the criterion to be MET.
 
 ---
 
-## 2. Every answer names a source
+## 1. Every request leaves exactly one log record
 
-Every answer the system produces names at least one source document.
+**Criterion:** Each trial sends the same mixed batch of 20 requests to `/ask` — the 5
+in-corpus questions, the 5 out-of-scope questions, 5 malformed bodies (a non-string
+`question`, an empty string, a 600-character question, a JSON array, non-JSON text), and
+5 injected faults (one each of `timeout`, `server_error`, `rate_limit`, `empty`,
+`bad_key`). For every response, its `request_id` appears in `logs/requests.jsonl`
+**exactly once**, and that record's `status` equals the HTTP status the client received.
 
-**Why this target:** generate.py already labels every retrieved chunk with
-`[from filename]` in the prompt and its system instruction tells the model
-outright to name the file it used. Naming a source is instruction-following,
-not retrieval luck — the filename is sitting right there in the context — so
-I'm holding this to 5 of 5 rather than 4. If this one comes in below 5, that's
-a sign the model is ignoring the instruction, not that retrieval had a bad
-day.
+**Target:** 20 of 20 per trial. Any missing record, duplicate record, or status mismatch
+is a miss.
 
----
+**Why this target:** The log is the only way to diagnose this system after the fact, and
+the requests most likely to go unlogged are the failures — exactly the ones I'd need to
+find. A log that drops one request in twenty can't be trusted to tell me what happened,
+so anything short of all of them is a miss, not a near-pass. The status check makes sure
+the record describes what the caller actually got, not just that a line was written.
 
-## 3. The relevance gate stops out-of-corpus questions
+## 2. Recovery from a transient model outage
 
-When I ask a question my documents clearly don't cover, the relevance gate
-stops it and the system returns "I don't have enough information about that" —
-in at least 4 of 5 tries.
+**Criterion:** Each of the 5 in-corpus questions, sent with `X-Fault: server_error:2`
+(the first two model attempts fail with a 503), returns HTTP 200 with `refused: false`
+and a non-empty answer within **6 seconds** client-side, and its log record shows
+`attempts: 3` and `retries: ["server", "server"]`.
 
-<!-- The five questions are the ones in `OUT_OF_SCOPE` at the bottom of
-     `questions.py`, and `run_eval.py` puts them through the gate and writes
-     what happened into your run log. Swap them for your own if you'd rather —
-     just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
+**Target:** 5 of 5 per trial.
 
-**Why this target:** I haven't measured my actual distance distribution yet —
-that's Milestone 4 — so this is a guess, not a measurement. None of my five
-out-of-scope questions (Mongolia's capital, diesel oil changes, the 1994 World
-Cup, ibuprofen dosage, a Rust for-loop) share real vocabulary with dining
-halls, courses, or housing, so I'd expect the gate to catch all five. I'm
-leaving one slot of slack because I don't yet know how the embedding model
-handles a generic-sounding question, and this is the criterion I most expect
-to revise once I've looked at real distances.
+**Why this target:** Two consecutive 503s is a realistic brief outage, and before this
+unit a single one failed the request. Two failures, not one, so the test exercises more
+than a single retry. Six seconds because the backoff schedule should cost 1 s + 2 s of
+waiting plus about 1 s for the real call (~4 s) — the time limit keeps retries from
+quietly slowing every request. Stricter (three 503s) adds another 4 s of backoff, which
+I'd rather report as a known limit than design around. Caveat: this tests my retry logic
+against a simulated 503, not Gemini's own outage behaviour.
 
----
+## 3. Bounded latency when the model hangs, under concurrent load
 
-## 4. No chunk is shorter than 80 characters
+**Criterion:** With every model attempt timing out (`X-Fault: timeout`), **5 requests
+sent at the same time** each receive a 504 JSON response within **30 seconds** of being
+sent, client-side.
 
-Every document in `campus_life` is between 183 and 554 characters — well
-under the 800-character `CHUNK_SIZE` — so the fixed-size fallback never
-splits anything; the real risk is in what I replace it with. If I split on
-paragraph breaks instead of raw length, some documents fall apart into
-fragments that lose their subject: `course_econ_101.txt`'s second paragraph is
-just "Expect 4 hours a week outside class." (42 characters), with no mention
-of Econ 101 anywhere in it.
+**Target:** 5 of 5 per trial.
 
-**Why this target:** 80 characters comfortably fits a real, self-contained
-fact — my printing-quota answer sentence alone is 92 characters — while still
-catching a bare, subject-less fragment like the one above. It's a floor meant
-to catch a specific failure mode I already found by reading the corpus, not a
-number picked in the abstract.
+**Why this target:** An outage hits everyone who is asking at that moment, not one
+person at a time, so testing a single request would only cover the easy case. 30 s is
+about the longest a person waits on a chat answer before reloading. It's also half of
+gunicorn's 60 s worker timeout: past that, a request gets killed with no response and no
+log record, so it would break criterion 1 as well.
 
----
+## 4. Every failure follows the error contract
 
-## 5. The named source actually backs the answer
+**Criterion:** Each of the 10 bad-path inputs from criterion 1 (5 malformed bodies, 5
+faults) returns:
 
-For at least 4 of my 5 test questions, the source document named in the
-answer is one that actually contains the `expects` phrase — not just a
-plausible-looking file from the same topic.
+- (a) valid JSON whose keys are exactly `error`, `kind`, `request_id`;
+- (b) this status: malformed body → 400, `timeout` → 504, `server_error` → 503,
+  `rate_limit` → 503, `empty` → 502, `bad_key` → 502;
+- (c) an `error` string containing none of `Traceback`, `Exception`, `google`, `genai`,
+  `API_KEY`, `injected` (case-insensitive).
 
-**Why this target:** `campus_life` has topic clusters where the same fact
-repeats across files — `course_cs_210.txt` and `course_cs_210_workload.txt`
-both state the "8 to 10 hours" figure, and every dining hall has a
-`_followup` file that echoes its parent — so naming *a* source (criterion 2)
-is easy, but naming the one that actually backs the specific fact used is the
-real test. I'm holding this to 4 of 5, the same margin as criterion 1 and for
-the same reason: my CS 210 question is the one built with an honest
-near-duplicate, so I'd forgive a mix-up between those two files without
-calling attribution broken — I would not forgive it naming the exams file,
-which never mentions hours at all.
+**Target:** 10 of 10 per trial.
 
----
+**Why this target:** A client program decides what to do from the status code — retry
+on 503/504, fix the request on 400 — so a wrong code makes it retry something that will
+never work, or give up on something that would have succeeded. Leaked internal text
+exposes the provider and its error details to whoever is calling. This is an interface
+rule, so every case must pass, not most.
 
-<!-- ─────────────────────────────────────────────────────────────────────────
-     WEEK 2 — read this before you change anything above.
+## 5. Normal answers didn't slow down
 
-     If a criterion turns out to be BROKEN rather than merely unmet, you can
-     revise it, and that earns credit. But never delete or edit the original
-     line. Add the revision underneath it, like this:
+**Criterion:** After one discarded warm-up request, the 5 in-corpus questions are each
+sent 4 times in a row (20 requests, cache off). All 20 return HTTP 200 with
+`refused: false`, and **at least 18 of 20** complete in under **2.0 seconds**
+client-side.
 
-         ## 1. Retrieved chunks contain the answer
+**Target:** 20/20 answered, and ≥ 18/20 under 2.0 s, per trial.
 
-         For at least 4 of my 5 test questions, the retrieved chunks include
-         one that contains the answer.
-
-         **Why this target:** ...
-
-         > **Revised in week 2:** For at least 4 of 5 questions, the top three
-         > results contain the answer.
-         >
-         > **Why revised:** I couldn't judge "the chunks include one that
-         > contains the answer" the same way twice — I scored two questions
-         > differently on Monday than on Wednesday. The new version is
-         > something I can actually check.
-
-     That's a revision because the criterion couldn't be MEASURED.
-
-     Lowering a target because you missed it is not a revision, and it costs
-     you the point:
-
-         ✗ "I said 4 of 5 but got 2 of 5, so 2 of 5 is more realistic."
-
-     A number you missed stays where it is, gets diagnosed, and gets a fix
-     attempted. That's where the points are.
-
-     The whole reason the originals stay visible is so someone can see what you
-     said before you knew the answer.
-     ───────────────────────────────────────────────────────────────────────── -->
+**Why this target:** This checks that the hardening didn't break or slow the system it
+wraps. On the normal path the only new code is input validation and one appended log
+line, which should add only milliseconds, so any noticeable slowdown points to a bug.
+2.0 s comes from the measured session before these criteria were written — 15 uncached
+answers, max 1.92 s. Two of twenty allowed over covers Gemini's own variability without
+ignoring a real slowdown.
