@@ -28,7 +28,10 @@ PORT="${PORT:-5001}"   # not 5000: macOS's AirPlay Receiver already listens ther
 echo "Serving on http://127.0.0.1:${PORT}   (Ctrl-C to stop; log: logs/requests.jsonl)"
 # --timeout 60: a request may legitimately spend up to REQUEST_DEADLINE_S (30s)
 #   retrying the model; gunicorn's default 30s would kill the worker mid-retry.
-# --threads 4: more than one request at a time on one process.
+# --threads 8: more than one request at a time on one process. Was 4 — capstone
+#   criterion 3 showed a 5th concurrent request queuing behind four hung ones for
+#   21 s (42 s total), because the request deadline can't see time spent queued.
+#   Each thread spends almost all of a hung request asleep, so threads are cheap.
 exec .venv/bin/gunicorn serve:app \
-  --bind "0.0.0.0:${PORT}" --workers 1 --threads 4 --timeout 60 \
+  --bind "0.0.0.0:${PORT}" --workers 1 --threads 8 --timeout 60 \
   --access-logfile -
