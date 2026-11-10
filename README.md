@@ -842,3 +842,33 @@ again.
 stop clipping the `error` field. Every remaining miss is in the model stage, and right
 now I'm inferring what Gemini did from timings; the next fix should be aimed with
 Gemini's actual words, not guesses.
+
+## How I Used AI (Week 9)
+
+I worked through this capstone as a TA, with Claude (Claude Code) doing most of the
+building. Two moments that mattered:
+
+1. **Choosing the system and shape.** I asked Claude to compare my four projects and
+   suggest something straightforward. It recommended Project 1 because `serve.py` was
+   already a bare Flask wrapper waiting for Week 9, and it suggested Shape A. Before
+   recommending anything it read the pipeline and listed the bad paths that `/ask` didn't
+   handle (no timeout, only 429s retried, empty responses returned as a 200 with a blank
+   answer, non-string input crashing into an HTML 500). Seeing that list, I picked
+   **Shape B instead**: the failure handling was the more interesting thing to test.
+2. **The criteria.** I wrote three rough criteria (one log record per request; a 503
+   still gets an answer; latency never over 30 s) and asked Claude to vet them. As
+   written, the second fails by design: a 503 on *every* attempt can't produce an answer.
+   The third said "never" with no sample size and no stated place where latency is
+   measured. Because I'm a TA rather than a student, I then asked it to write full
+   refinements, and the five in `criteria.md` are its versions of my three ideas plus the
+   two it had suggested (error contract, warm latency). What I kept from its reasoning:
+   making criterion 3 *concurrent*, which it predicted would fail because of the 4-thread
+   pool. That prediction held exactly (42.2 s), and it became the diagnosis and the fix.
+   A student shouldn't do it this way. The brief says the criteria have to be your own,
+   and this is the step to do yourself.
+
+Also worth recording: the first smoke test, run before any criteria, showed the
+instrumentation catching problems in itself. Gemini rejected a 3 s timeout ("minimum
+allowed deadline is 10s"), and the first request's logged latency (2.3 s) disagreed with
+curl's (38 s) because the timer started after the heavy imports. Both were fixed before
+any measurement counted.
