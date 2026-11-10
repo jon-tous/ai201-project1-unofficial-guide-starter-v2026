@@ -604,3 +604,130 @@ $0.000277 = **$0.14/day**, about **$4.20/month**. On the free tier I actually
 use, it's $0 — the binding cost there is quota, not money: 500 requests/day
 fits, but the limiter's 30 requests/minute would make a burst of 100 people
 asking at once queue for over 15 minutes.
+
+## Run Log and Verdicts
+
+Criteria: [criteria.md](criteria.md) (committed in `9ddfb14`, before any trial ran).
+Each trial is one run of `tools/trials.py --trial N`, which starts a fresh server
+(`AI201_CACHE=0 AI201_ALLOW_FAULTS=1 ./run.sh`), runs all five criteria, and stops it.
+Nothing was changed between trials. Raw responses: `results/capstone/before_trial{1,2,3}.json`;
+server-side records: `logs/requests.jsonl`.
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Every request leaves exactly one matching log record | 20 of 20 | 20/20 | 20/20 | 20/20 | **MET** |
+| 2. Two injected 503s → 200 answer in < 6 s, log shows 3 attempts | 5 of 5 | 5/5 | 1/5 | 0/5 | **MISSED** |
+| 3. 5 concurrent timed-out requests each get a 504 in < 30 s | 5 of 5 | 4/5 | 4/5 | 4/5 | **MISSED** |
+| 4. Every bad-path response follows the error contract | 10 of 10 | 10/10 | 10/10 | 10/10 | **MET** |
+| 5. Warm normal path: 20/20 answered and ≥ 18/20 < 2.0 s | both | 17/20 answered, 16/20 fast | 19/20, 19/20 | 20/20, 6/20 | **MISSED** |
+
+Driver summary as printed (`tools/trials.py::main`):
+
+```
+before_trial1  (2026-11-09T21:54:46-0500)
+  C1  20/20                        MET
+  C2  5/5                          MET  secs=[4.209, 3.738, 3.876, 3.736, 3.708]
+  C3  4/5                          MISSED  secs=[21.117, 21.123, 21.124, 21.125, 42.204]
+  C4  10/10                        MET
+  C5  17/20 answered, 16/20 <2.0s  MISSED  max=27.048s
+
+before_trial2  (2026-11-09T21:59:04-0500)
+  C1  20/20                        MET
+  C2  1/5                          MISSED  secs=[9.299, 8.378, 3.809, 9.269, 7.724]
+  C3  4/5                          MISSED  secs=[21.123, 21.124, 21.127, 21.128, 42.222]
+  C4  10/10                        MET
+  C5  19/20 answered, 19/20 <2.0s  MISSED  max=7.756s
+
+before_trial3  (2026-11-09T22:03:26-0500)
+  C1  20/20                        MET
+  C2  0/5                          MISSED  secs=[13.076, 8.356, 11.834, 11.402, 24.714]
+  C3  4/5                          MISSED  secs=[21.145, 21.147, 21.148, 21.151, 42.224]
+  C4  10/10                        MET
+  C5  20/20 answered, 6/20 <2.0s   MISSED  max=8.094s
+```
+
+### Real output, per criterion (trial 1)
+
+**C1** — log records written by `requestlog.py::write` from `serve.py::ask`, for the
+non-JSON body and the injected bad key; each `request_id` matched the response's
+`X-Request-ID` exactly once (`tools/trials.py::c1_score`):
+
+```
+{"ts": "2026-11-10T02:55:52.992+00:00", "request_id": "e4fe55d52942", "status": 400, "outcome": "bad_input", "latency_ms": 0, "attempts": 0, "retries": null, "prompt_tokens": 0, "output_tokens": 0, "error": "Send a JSON object, like {\"question\": \"is the housing lottery random?\"}"}
+{"ts": "2026-11-10T02:56:35.380+00:00", "request_id": "f49d876d6ae0", "status": 502, "outcome": "model_error", "latency_ms": 63, "attempts": 1, "retries": null, "prompt_tokens": 0, "output_tokens": 0, "error": "_InjectedBadKey: injected: 400 API_KEY_INVALID"}
+```
+
+**C2** — client result, then its log record (`generate.py::generate` retry loop):
+
+```
+{"status": 200, "secs": 4.209, "request_id": "0552debb2fb6"}
+{"ts": "2026-11-10T02:57:40.099+00:00", "request_id": "0552debb2fb6", "status": 200, "outcome": "answered", "latency_ms": 4205, "attempts": 3, "retries": ["server", "server"], "prompt_tokens": 620, "output_tokens": 41, "error": null}
+```
+
+**C3** — the five concurrent responses (`tools/trials.py::c3_concurrent_timeout`):
+
+```
+{"status": 504, "secs": 21.117, "body": {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "f5f654032611"}}
+{"status": 504, "secs": 21.123, "body": {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "7dcfba187e31"}}
+{"status": 504, "secs": 21.125, "body": {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "b73eb4d19780"}}
+{"status": 504, "secs": 21.124, "body": {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "6e8df5f908d9"}}
+{"status": 504, "secs": 42.204, "body": {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "e8c69d3408e7"}}
+```
+
+**C4** — three of the ten bad-path bodies (`serve.py::ask` → `fail`):
+
+```
+400 {"error": "\"question\" must be a string, not int.", "kind": "bad_input", "request_id": "352368146724"}
+504 {"error": "The answer service took too long to respond. Please try again in a moment.", "kind": "model_timeout", "request_id": "92950bd74191"}
+503 {"error": "The answer service is temporarily unavailable. Please try again in a moment.", "kind": "model_unavailable", "request_id": "308eababf095"}
+```
+
+**C5** — the 16th and 17th normal requests, where Gemini started returning real 429s:
+
+```
+{"ts": "2026-11-10T02:55:04.205+00:00", "request_id": "b91235e0e256", "status": 200, "outcome": "answered", "latency_ms": 4119, "attempts": 3, "retries": ["rate_limit", "rate_limit"], "prompt_tokens": 620, "output_tokens": 41, "error": null}
+{"ts": "2026-11-10T02:55:12.009+00:00", "request_id": "25c2ab9e8e98", "status": 503, "outcome": "model_unavailable", "latency_ms": 7800, "attempts": 4, "retries": ["rate_limit", "rate_limit", "rate_limit", "rate_limit"], "prompt_tokens": 0, "output_tokens": 0, "error": "Model service unavailable. 4 attempt(s); last error: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your cur… [+1108 chars]"}
+```
+
+### Diagnoses
+
+**C3 — stage: the serving layer (`run.sh`'s gunicorn pool). Mechanism: the request
+deadline doesn't count time spent queued.** `run.sh` starts 1 worker with 4 threads.
+Each timed-out request holds a thread for ~21 s (a 10 s attempt, 1 s backoff, a second
+10 s attempt, then the deadline check in `generate.py::generate` stops it). Four requests
+take all four threads; the fifth sits in gunicorn's queue for 21 s, then runs its own
+21 s → 42.2 s. The 30 s deadline is measured from inside `generate()`, so the queue time
+is invisible to it. The fifth time was 42.20–42.22 s in all three trials — a structural
+result, not variance.
+
+**C5 and C2 — one problem, two symptoms. Stage: the model call (Gemini, upstream).
+Mechanism: the test's sustained call rate exceeds what this API key gets, and the
+system's pacing and backoff are sized for a limit it doesn't actually have.**
+
+- *Trial 1, C5:* after ~16 real calls in ~15 s Gemini returned real `429
+  RESOURCE_EXHAUSTED`. The local limiter (`config.REQUESTS_PER_MINUTE = 30`) never
+  stepped in because it assumes twice the rate Gemini allowed. The retry backoff
+  (1 s, 2 s, 4 s) is seconds long against a one-minute window, so three requests used
+  all four attempts and returned 503. Retries also count against the local limiter,
+  which is why one of them took 27 s: the limiter slept before its fourth attempt. The
+  very next request succeeded in 1.4 s — the window had rolled over, so this is a
+  per-minute limit, not the daily quota.
+- *Trial 3, C5:* no 429s and no retries — every request took 1 attempt — but 14 of 20
+  took 3–8 s. `retrieval_ms` stayed ~70 ms, so all of it was inside the Gemini call. By
+  then the key had made ~70 real calls in ten minutes; slower responses with no error is
+  consistent with the provider throttling by latency, but the log can't confirm it (it
+  doesn't record response headers).
+- *C2, trials 2–3:* the retry logic did its job every time — 15 of 15 requests returned
+  200 answers after exactly the injected failures. Every miss is on the 6 s limit, and
+  `model_ms` puts the time in the final, real call. Two trial-3 requests logged a third
+  `server` retry — a real transient error from Gemini on top of the two injected ones.
+  C2 met in trial 1 and degraded through trials 2–3, tracking the same upstream slowdown
+  as C5.
+
+**Observability gaps the diagnosis exposed:** `retries` records only the failure *kind*,
+not its text, so I can't tell whether trial 3's extra `server` retry was a 503 or a
+dropped connection; and `requestlog.py` clips errors at 300 characters, which cut off the
+part of Gemini's 429 that names which quota was hit.
+
+**C1 and C4 met in all three trials.** The logging and the error contract held for every
+request, including the 429-driven failures nobody planned for in C5.
