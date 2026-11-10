@@ -83,6 +83,31 @@ CACHE_ENABLED = os.getenv("AI201_CACHE", "1") != "0"
 CACHE_DIR = ROOT / ".cache"
 
 
+# ─── Failure handling (Week 9 capstone, Shape B) ─────────────────────────────
+# How long one model call may take before it's abandoned, and how long a whole
+# /ask request may spend retrying before it gives up and says so. A retry is
+# only started if it could still finish inside the request deadline.
+
+MODEL_TIMEOUT_S = float(os.getenv("AI201_MODEL_TIMEOUT", "10"))
+REQUEST_DEADLINE_S = float(os.getenv("AI201_REQUEST_DEADLINE", "30"))
+
+# Longest question /ask accepts. The longest real question in my Week 2 set is
+# under 120 characters; 500 leaves room for a wordy person, not for a pasted essay.
+MAX_QUESTION_CHARS = 500
+
+# Fault injection, for testing the bad path on purpose. Off unless
+# AI201_ALLOW_FAULTS=1, in which case a request can ask for a fault with an
+# `X-Fault` header, or AI201_FAULT sets one for every request.
+#   timeout | server_error | rate_limit | empty | bad_key    — fail every attempt
+#   server_error:1                                           — fail only the first attempt
+ALLOW_FAULTS = os.getenv("AI201_ALLOW_FAULTS", "0") == "1"
+FAULT = os.getenv("AI201_FAULT", "") if ALLOW_FAULTS else ""
+
+# One JSON object per line, one line per /ask request.
+LOG_DIR = ROOT / "logs"
+REQUEST_LOG = Path(os.getenv("AI201_REQUEST_LOG", str(LOG_DIR / "requests.jsonl")))
+
+
 # ─── Paths ───────────────────────────────────────────────────────────────────
 
 CORPORA_DIR = ROOT / "corpora"

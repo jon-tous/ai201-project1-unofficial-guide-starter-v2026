@@ -27,6 +27,7 @@ needs three real answers to the same question, not one answer three times over.
 `run_eval.py` passes cache=False for you.
 """
 
+import contextvars
 import hashlib
 import json
 import os
@@ -46,6 +47,160 @@ _budget_warned = False
 
 class QuotaGuard(Exception):
     """Raised when a session blows through its request budget."""
+
+
+# ─── Week 9: failure types the web layer can tell apart ─────────────────────
+
+
+class ModelFailure(Exception):
+    """Base class: the model call didn't produce an answer. `kind` names why."""
+
+    kind = "model_error"
+
+    def __init__(self, message: str, attempts: int = 0):
+        super().__init__(message)
+        self.attempts = attempts
+
+
+class ModelTimeout(ModelFailure):
+    """Every attempt timed out before the request deadline ran out."""
+
+    kind = "model_timeout"
+
+
+class ModelUnavailable(ModelFailure):
+    """Every attempt hit a transient error (5xx or rate limit)."""
+
+    kind = "model_unavailable"
+
+
+class ModelEmptyResponse(ModelFailure):
+    """The model answered, but with no text — every attempt."""
+
+    kind = "model_empty"
+
+
+class ModelError(ModelFailure):
+    """A failure retrying won't fix: a bad key, a rejected request."""
+
+    kind = "model_error"
+
+
+# Per-request accounting and fault injection. serve.py calls begin_request() at
+# the top of every /ask; these live in a ContextVar so two requests on two
+# threads never see each other's numbers.
+_request_stats: contextvars.ContextVar = contextvars.ContextVar("request_stats", default=None)
+_request_fault: contextvars.ContextVar = contextvars.ContextVar("request_fault", default="")
+
+
+def begin_request(fault: str = "") -> dict:
+    """Start a fresh stats record for this request and return it.
+
+    The dict is filled in by generate() as it runs: attempts made, whether the
+    cache answered, tokens reported by the service, and why each retry happened.
+    """
+    stats = {
+        "attempts": 0,
+        "cache_hit": False,
+        "prompt_tokens": 0,
+        "output_tokens": 0,
+        "retries": [],
+    }
+    _request_stats.set(stats)
+    _request_fault.set((fault or config.FAULT) if config.ALLOW_FAULTS else "")
+    return stats
+
+
+def _stats() -> dict:
+    stats = _request_stats.get()
+    return stats if stats is not None else {"attempts": 0, "retries": [], "prompt_tokens": 0, "output_tokens": 0}
+
+
+class _InjectedServerError(Exception):
+    """Stands in for a Gemini 503 when a fault is injected."""
+
+
+class _InjectedRateLimit(Exception):
+    """Stands in for a Gemini 429 when a fault is injected."""
+
+
+class _InjectedBadKey(Exception):
+    """Stands in for a Gemini 400 API_KEY_INVALID when a fault is injected."""
+
+
+def _inject_fault(attempt: int):
+    """Raise (or sleep) the way the real failure would, if one was asked for.
+
+    Returns "empty" when the empty-response fault applies, so the caller can
+    skip the real call and act as though the model returned no text.
+    """
+    spec = _request_fault.get()
+    if not spec:
+        return None
+    kind, _, count = spec.partition(":")
+    if count and attempt >= int(count):
+        return None  # e.g. server_error:1 — only the first attempt fails
+    if kind == "timeout":
+        time.sleep(config.MODEL_TIMEOUT_S)
+        raise TimeoutError(f"injected: model call exceeded {config.MODEL_TIMEOUT_S:.0f}s")
+    if kind == "server_error":
+        raise _InjectedServerError("injected: 503 UNAVAILABLE")
+    if kind == "rate_limit":
+        raise _InjectedRateLimit("injected: 429 RESOURCE_EXHAUSTED")
+    if kind == "bad_key":
+        raise _InjectedBadKey("injected: 400 API_KEY_INVALID")
+    if kind == "empty":
+        return "empty"
+    return None
+
+
+def _classify(exc: Exception) -> str | None:
+    """Which kind of transient failure this is, or None if retrying won't help."""
+    if isinstance(exc, _EmptyText):
+        return "empty"
+    if isinstance(exc, _InjectedServerError):
+        return "server"
+    if isinstance(exc, _InjectedRateLimit):
+        return "rate_limit"
+    if isinstance(exc, _InjectedBadKey):
+        return None
+
+    try:
+        import httpx
+
+        if isinstance(exc, (httpx.TimeoutException,)):
+            return "timeout"
+        if isinstance(exc, (httpx.ConnectError, httpx.RemoteProtocolError)):
+            return "server"
+    except ImportError:
+        pass
+    if isinstance(exc, TimeoutError):
+        return "timeout"
+
+    try:
+        from google.genai import errors
+
+        if isinstance(exc, errors.ServerError):
+            return "server"
+        if isinstance(exc, errors.ClientError) and getattr(exc, "code", None) == 429:
+            return "rate_limit"
+    except ImportError:
+        pass
+
+    message = str(exc).lower()
+    if "timed out" in message or "timeout" in message:
+        return "timeout"
+    if (
+        "429" in message
+        or "resource" in message and "exhaust" in message
+        or "rate" in message and "limit" in message
+    ):
+        return "rate_limit"
+    return None
+
+
+class _EmptyText(Exception):
+    """The model returned a response with no text in it."""
 
 
 # ─── Cache ───────────────────────────────────────────────────────────────────
@@ -139,8 +294,13 @@ def _record_tokens(response) -> None:
         meta = getattr(response, "usage_metadata", None)
         if meta is None:
             return
-        _session_prompt_tokens += int(getattr(meta, "prompt_token_count", 0) or 0)
-        _session_output_tokens += int(getattr(meta, "candidates_token_count", 0) or 0)
+        prompt_tokens = int(getattr(meta, "prompt_token_count", 0) or 0)
+        output_tokens = int(getattr(meta, "candidates_token_count", 0) or 0)
+        _session_prompt_tokens += prompt_tokens
+        _session_output_tokens += output_tokens
+        stats = _stats()
+        stats["prompt_tokens"] += prompt_tokens
+        stats["output_tokens"] += output_tokens
     except Exception:
         pass  # accounting never breaks the thing it is accounting for
 
@@ -194,7 +354,11 @@ def _get_client():
                 "Copy .env.example to .env and paste your key in, then try "
                 "again. `python test.py` will confirm it's working."
             )
-        _client = genai.Client(api_key=key)
+        # Week 9: without a timeout, a hung call hangs the whole request.
+        _client = genai.Client(
+            api_key=key,
+            http_options={"timeout": int(config.MODEL_TIMEOUT_S * 1000)},
+        )
     return _client
 
 
@@ -214,21 +378,35 @@ def generate(prompt: str, system: str | None = None, cache: bool = True) -> str:
     """
     global _session_calls, _cache_hits
 
-    use_cache = cache and config.CACHE_ENABLED
+    stats = _stats()
+    fault = _request_fault.get()
+    # An injected fault has to reach the call path, so it skips the cache.
+    use_cache = cache and config.CACHE_ENABLED and not fault
     key = _cache_key(prompt, system)
 
     if use_cache:
         hit = _cache_read(key)
         if hit is not None:
             _cache_hits += 1
+            stats["cache_hit"] = True
             return hit
 
     _check_budget()
 
+    # Week 9: retry on anything transient (timeouts, 5xx, 429, empty text), not
+    # just rate limits — but only while another attempt could still finish
+    # inside the request deadline. Past that, stop and say which failure it was.
+    deadline = time.monotonic() + config.REQUEST_DEADLINE_S
     last_error: Exception | None = None
+    last_kind = "server"
     for attempt in range(config.MAX_RETRIES):
         _wait_for_slot()
+        stats["attempts"] += 1
         try:
+            injected = _inject_fault(attempt)
+            if injected == "empty":
+                raise _EmptyText("injected: model returned no text")
+
             client = _get_client()
             _call_times.append(time.monotonic())
             _session_calls += 1
@@ -239,35 +417,45 @@ def generate(prompt: str, system: str | None = None, cache: bool = True) -> str:
 
             response = client.models.generate_content(**kwargs)
             _record_tokens(response)
-            text = (response.text or "").strip()
+            try:
+                text = (response.text or "").strip()
+            except Exception:  # noqa: BLE001 — a blocked response can raise here
+                text = ""
+            if not text:
+                raise _EmptyText("model returned a response with no text")
 
             if use_cache:
                 _cache_write(key, text)
             return text
 
-        except Exception as exc:  # noqa: BLE001 — surfaced below
+        except Exception as exc:  # noqa: BLE001 — classified below
             last_error = exc
-            message = str(exc).lower()
-            rate_limited = (
-                "429" in message
-                or "resource" in message and "exhaust" in message
-                or "rate" in message and "limit" in message
-            )
-            if not rate_limited:
-                raise
+            kind = _classify(exc)
+            if kind is None:
+                raise ModelError(
+                    f"{type(exc).__name__}: {exc}", attempts=stats["attempts"]
+                ) from exc
+            last_kind = kind
             backoff = 2 ** attempt
-            print(
-                f"  [rate limit] service pushed back. Retrying in {backoff}s "
-                f"(attempt {attempt + 1} of {config.MAX_RETRIES}).",
-                file=sys.stderr,
-                flush=True,
-            )
-            time.sleep(backoff)
+            stats["retries"].append(kind)
+            if time.monotonic() + backoff + config.MODEL_TIMEOUT_S > deadline:
+                break  # another attempt couldn't finish in time
+            if attempt + 1 < config.MAX_RETRIES:
+                print(
+                    f"  [{kind}] retrying in {backoff}s "
+                    f"(attempt {attempt + 1} of {config.MAX_RETRIES}).",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                time.sleep(backoff)
 
-    raise RuntimeError(
-        f"Still rate limited after {config.MAX_RETRIES} attempts. Wait a "
-        f"minute and try again — your key is fine.\nLast error: {last_error}"
-    )
+    attempts = stats["attempts"]
+    detail = f"{attempts} attempt(s); last error: {last_error}"
+    if last_kind == "timeout":
+        raise ModelTimeout(f"Model call timed out. {detail}", attempts=attempts)
+    if last_kind == "empty":
+        raise ModelEmptyResponse(f"Model returned no text. {detail}", attempts=attempts)
+    raise ModelUnavailable(f"Model service unavailable. {detail}", attempts=attempts)
 
 
 # ─── The grounded answer ─────────────────────────────────────────────────────
