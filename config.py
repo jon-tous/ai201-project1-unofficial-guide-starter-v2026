@@ -88,7 +88,9 @@ CACHE_DIR = ROOT / ".cache"
 # /ask request may spend retrying before it gives up and says so. A retry is
 # only started if it could still finish inside the request deadline.
 
-MODEL_TIMEOUT_S = float(os.getenv("AI201_MODEL_TIMEOUT", "10"))
+# Gemini rejects any client deadline under 10 s ("Minimum allowed deadline is
+# 10s"), so that is the floor — found by the Week 9 smoke test, logged as a 400.
+MODEL_TIMEOUT_S = max(10.0, float(os.getenv("AI201_MODEL_TIMEOUT", "10")))
 REQUEST_DEADLINE_S = float(os.getenv("AI201_REQUEST_DEADLINE", "30"))
 
 # Longest question /ask accepts. The longest real question in my Week 2 set is
