@@ -475,3 +475,42 @@ either one is closer to confirming I wrote the code I said I'd write than
 to learning something about the system's behavior. I'd keep them (a
 regression could still break either), but I wouldn't count on them to
 catch anything new.
+
+---
+
+# Week 9 — Capstone
+
+## What This Extends
+
+This extends **Project 1, The Unofficial Guide** — the retrieval-augmented Q&A
+system over the `campus_life` corpus (retrieve → relevance gate → grounded
+Gemini answer), served over HTTP by `serve.py`'s `POST /ask`.
+
+What's new is a **failure-handling layer on the `/ask` request path**, plus the
+structured log that records every request, including the ones that fail. Before
+this unit, `/ask` only behaved well when everything went right: the Gemini call
+had no timeout, only rate-limit errors were retried, an empty model response came
+back as a 200 with a blank answer, a non-string `question` crashed into Flask's
+HTML error page, and nothing was logged anywhere.
+
+## The Shape
+
+**Shape B — Harden against failure.** I'm making `/ask` survive the bad path:
+every request either gets a grounded answer or a JSON error with a deliberate
+status code and a plain-language message, within a bounded amount of time, and
+every request — good or bad — leaves a structured log record. Concretely: a
+timeout on the model call, retries with backoff on transient errors (timeouts and
+5xx, not just 429s), a fallback when the model returns nothing, validation of the
+`question` field (type and length), and a switch that lets me inject each of
+those faults on purpose so they can be tested.
+
+**Out of scope:**
+
+- **I'm not touching retrieval, the relevance gate, chunking, or the prompt.**
+  Answer quality was Week 2's job; this unit is only about what happens when a
+  request goes wrong.
+- **I'm not hosting it (Path B, local with logs) and not adding auth or inbound
+  rate limiting.** Protecting the service from callers is a different problem
+  from surviving failures of the things it depends on.
+- **I'm not adding a fallback model or a response queue.** When Gemini is down
+  after retries, `/ask` says so cleanly; it doesn't try to answer some other way.
